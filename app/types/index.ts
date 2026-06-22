@@ -37,6 +37,7 @@ interface ClientData {
     significantOtherName?: string;
     significantOtherBirthdate?: string;
     ringSize?: string;
+    priority: 'hot' | 'cold' | 'warm'
 }
 
 export type { UserData, AppointmentData, ClientData }

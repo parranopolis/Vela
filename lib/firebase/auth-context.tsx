@@ -11,7 +11,7 @@ export function AuthObserver() {
             if (user) {
                 console.log('testing')
                 const token = user.getIdToken()
-                document.cookie = `session_token=${token}; path=/; max-age=30; SameSite=Lax; Secure`
+                document.cookie = `session_token=${token}; path=/; max-age=1200; SameSite=Lax; Secure`
                 // User is signed in, see docs for a list of available properties
                 // https://firebase.google.com/docs/reference/js/auth.user
                 // ...
