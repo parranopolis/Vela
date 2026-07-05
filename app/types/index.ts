@@ -7,16 +7,24 @@ interface UserData {
     email: string;
     phone: string;
     associateNumber: string;
+    initials: string
 }
 
 interface AppointmentData {
     id: string;
     primaryOwnerId: string;
-    coOwners: [string?, string?]
+    coOwners: string[];
+    coOwnersMeta: {
+        [userId: string]:{
+            initials: string;
+        }
+    }
     clientId: string;
-    date: Timestamp;
+    clientName: string;
+    clientLastName: string;
     notes: string;
     createdAt: Timestamp;
+    leadStatus: 'Hot' | 'Warm' | 'Cold'; // Literal types prevent spelling bugs
 }
 
 interface ClientData {

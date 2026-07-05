@@ -9,7 +9,6 @@ export function AuthObserver() {
         const unsubscribe =onAuthStateChanged(auth, (user) => {
             
             if (user) {
-                console.log('testing')
                 const token = user.getIdToken()
                 document.cookie = `session_token=${token}; path=/; max-age=1200; SameSite=Lax; Secure`
                 // User is signed in, see docs for a list of available properties
