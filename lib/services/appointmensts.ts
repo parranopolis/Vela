@@ -1,7 +1,7 @@
 // funcion para traer todos los datos de Firebase
-import { AppointmentData } from '@/app/types';
+import { AppointmentData, ClientData } from '@/app/types';
 import { db } from '../firebase/config'
-import { collection, query, where, getDocs, Timestamp, doc, getDoc } from 'firebase/firestore'
+import { collection, query, where, getDocs, Timestamp, doc, getDoc, orderBy } from 'firebase/firestore'
 
 export async function AppointmentsFetchData(userId: string) {
 
@@ -15,7 +15,10 @@ export async function AppointmentsFetchData(userId: string) {
         const appointmentsRef = collection(db, 'appointments')
         const q = query(
             appointmentsRef,
-            where('coOwners', 'array-contains', userId)
+            where('coOwners', 'array-contains', userId),
+            where('date', '>=', Timestamp.fromDate(startOfToday)),
+            where('date', '<=', Timestamp.fromDate(endOfToday)),
+            orderBy('date')
         )
 
         const querySnapshot = await getDocs(q)
@@ -25,8 +28,27 @@ export async function AppointmentsFetchData(userId: string) {
             id: doc.id,
             ...doc.data()
         }))    
-        return items 
+        return items as AppointmentData[]
  }catch (error) {
     console.error("Error fetching user appointments:", error);
   }
 } 
+
+export async function clientFetchData(clientId: string){
+    try{
+        const docRef = doc(db, 'clients', clientId)
+        const docSnap = await getDoc(docRef)
+        if(docSnap.exists()){
+            return {
+                id: docSnap.id,
+                ...docSnap.data()
+            } as ClientData
+        }else{
+            console.log("No such document!")
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching client data:", error);
+        return null;
+    }
+}

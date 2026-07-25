@@ -24,6 +24,7 @@ interface AppointmentData {
     clientLastName: string;
     notes: string;
     createdAt: Timestamp;
+    date: Timestamp;
     leadStatus: 'Hot' | 'Warm' | 'Cold'; // Literal types prevent spelling bugs
 }
 
@@ -33,7 +34,7 @@ interface ClientData {
     name: string;
     lastName: string;
     notes: string
-    dateCreated: Timestamp;
+    dateCreatedAt: Timestamp;
     address?: string;
     city?: string;
     state: string;
