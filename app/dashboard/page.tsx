@@ -1,19 +1,21 @@
 
 // import { useEffect, useState } from 'react';
 // import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { cookies } from 'next/headers' 
-import { getServerAuth } from '@/lib/firebase/config';
+// import { cookies } from 'next/headers' 
+// import { getServerAuth } from '@/lib/firebase/config';
 import Link  from 'next/link'
-import ButtonSignOut from './buttonSignOut';
-import { AppointmentCard } from '../../components/AppointmentCard'
+// import ButtonSignOut from './buttonSignOut';
+// import { AppointmentCard } from '../../components/AppointmentCard'
 import {DashboardClient} from './DashboardClient'
+import { NavBar } from '@/components/bar'
 // import { AppointmentsFetchData } from '@/lib/services/appointmensts';
 export default async function Dashboard(){
   
   return <>
-  <DashboardClient/>
-    <Link href='/login'>Login</Link>
-    <ButtonSignOut />
+    <NavBar/>
+    <DashboardClient/>
+    {/* <Link href='/login'>Login</Link> */}
+    {/* <ButtonSignOut /> */}
   </>
   
 

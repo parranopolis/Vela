@@ -1,5 +1,6 @@
-import { AuthObserver, AuthProvider } from "@/lib/firebase/auth-context";
+import { AuthProvider } from "@/lib/firebase/auth-context";
 import type { Metadata } from "next";
+import Script from 'next/script'
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css"
 
@@ -32,8 +33,9 @@ export default function RootLayout({
         <AuthProvider>
           {children} 
         </AuthProvider>
-
-        {/* <AuthObserver /> */}
+        <Script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></Script>
+        {/* <script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></script> */}
+        <Script noModule src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js"></Script>
       </body>
     </html>
   );

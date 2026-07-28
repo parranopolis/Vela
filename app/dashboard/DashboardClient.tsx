@@ -21,7 +21,7 @@ export function DashboardClient() {
     },[user])
 
     return <>
-         <h1>Este es el nuevo Dashboard.</h1> 
+         {/* <h1>Este es el nuevo Dashboard.</h1>  */}
         <main>
             <section >
                 <h1 className="text-center text-5xl mt-8">Today&apos;s Appointments</h1>
@@ -46,10 +46,6 @@ export function DashboardClient() {
                     </div>
                 </section> 
             </section> 
-            <div>Dashboard</div> 
-            {/* <Link href='/login'>Loginasdasd</Link> 
-            <ButtonSignOut /> 
-            */}
         </main> 
     </>
 }
