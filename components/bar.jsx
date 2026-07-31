@@ -11,7 +11,7 @@ export function NavBar () {
                 alt="Picture of the author"/>
             </section>
             <section className="flex gap-4">
-                <span><ion-icon name="home-outline"></ion-icon></span>
+                <Link href={'/dashboard'}><span><ion-icon name="home-outline"></ion-icon></span></Link>
                 <Link href={'/allentries'}><span><ion-icon name="person-outline"></ion-icon></span></Link>
                 <span><ButtonSignOut icon={<ion-icon name="log-out-outline"></ion-icon>}/></span>
             </section>

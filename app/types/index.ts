@@ -31,6 +31,7 @@ interface AppointmentData {
 interface ClientData {
     id: string;
     ownerId: string;
+    ownerInitials:string;
     name: string;
     lastName: string;
     notes: string

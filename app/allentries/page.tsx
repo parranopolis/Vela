@@ -1,3 +1,9 @@
+import { NavBar } from "@/components/bar";
+import { ClientListInfo } from './ClientListInfo'
+
 export default function AllEntries (){
-    return <div>All Entries</div>
+    return <>
+        <NavBar/>
+        <ClientListInfo/>
+    </>
 }

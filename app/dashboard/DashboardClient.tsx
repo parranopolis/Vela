@@ -21,7 +21,6 @@ export function DashboardClient() {
     },[user])
 
     return <>
-         {/* <h1>Este es el nuevo Dashboard.</h1>  */}
         <main>
             <section >
                 <h1 className="text-center text-5xl mt-8">Today&apos;s Appointments</h1>

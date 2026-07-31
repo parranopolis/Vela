@@ -23,7 +23,6 @@ export async function AppointmentsFetchData(userId: string) {
 
         const querySnapshot = await getDocs(q)
 
-        // const docRef2 = await getDocs(collection(db, 'appointments'))
         const items = querySnapshot.docs.map(doc =>({
             id: doc.id,
             ...doc.data()
