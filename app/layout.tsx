@@ -1,7 +1,8 @@
-import { AuthObserver } from "@/lib/firebase/auth-context";
+import { AuthProvider } from "@/lib/firebase/auth-context";
 import type { Metadata } from "next";
+import Script from 'next/script'
 import { Geist, Geist_Mono } from "next/font/google";
-// import "./globals.css"
+import "./globals.css"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,8 +30,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children} 
-        <AuthObserver />
+        <AuthProvider>
+          {children} 
+        </AuthProvider>
+        <Script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></Script>
+        {/* <script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></script> */}
+        <Script noModule src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js"></Script>
       </body>
     </html>
   );
