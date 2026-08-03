@@ -26,6 +26,7 @@ interface AppointmentData {
     createdAt: Timestamp;
     date: Timestamp;
     leadStatus: 'Hot' | 'Warm' | 'Cold'; // Literal types prevent spelling bugs
+    saleStatus: 'set_up' | 'pending_callback' | 'discarted' | 'sale_closed'
 }
 
 interface ClientData {

@@ -3,17 +3,45 @@
 // import { getAuth, onAuthStateChanged } from 'firebase/auth';
 // import { cookies } from 'next/headers' 
 // import { getServerAuth } from '@/lib/firebase/config';
-import Link  from 'next/link'
+// import Link  from 'next/link'
 // import ButtonSignOut from './buttonSignOut';
 // import { AppointmentCard } from '../../components/AppointmentCard'
-import {DashboardClient} from './DashboardClient'
+import { DashboardClients } from './DashboardClient'
 import { NavBar } from '@/components/bar'
 // import { AppointmentsFetchData } from '@/lib/services/appointmensts';
 export default async function Dashboard(){
-  
+  const rules = {
+    today_appointment : {
+      title : 'Today Appointment',
+      category: 'today_appointment',
+      saleStatus: 'set_up',
+    },
+    follow_up : {
+      title : 'Follow Up',
+      category: 'follow_up',
+      saleStatus: 'follow_up', // mirar esto, el follow up es para cualquier fecha vencida, no importa el status.
+    },
+    pending_callback: {
+      title : 'Pending For a Callback',
+      category: 'pending_callback',
+      saleStatus: 'pending_callback',
+    }
+    // saleStatus: 'set_up' | 'pending_callback' | 'discarted' | 'sale_closed'
+
+  }
   return <>
     <NavBar/>
-    <DashboardClient/>
+    <section className='grid '>
+      <article className='today_appointment'>
+        <DashboardClients rules={rules.today_appointment}/>
+      </article>
+      <article className='follow_up'>
+        <DashboardClients rules={rules.follow_up}/>
+      </article>
+      <article className='pending_callback'>
+        <DashboardClients rules={rules.pending_callback}/>
+      </article>
+    </section>
     {/* <Link href='/login'>Login</Link> */}
     {/* <ButtonSignOut /> */}
   </>
