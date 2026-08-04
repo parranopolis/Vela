@@ -3,28 +3,34 @@ import { useAuth } from "@/lib/firebase/auth-context";
 import { useEffect, useState } from "react";
 import { ClientData } from "../types";
 import { clientsListFetchCard } from "@/lib/services/clients";
+import { LoadingSpinner } from "@/components/loading";
 
 export function ClientListInfo (){
     const { user } = useAuth()
 
     const [clients, setClients] = useState<ClientData[]>([])
-    
+    const [ isLoading, setIsLoading ] = useState(true)
     useEffect(() => {
         if(!user) return
         clientsListFetchCard()
         .then((data) => {
-            if(data) setClients(data.clientData)
+            if(data) {
+                setClients(data.clientData)
+                setIsLoading(false)
+            }
         });
     },[user])
     return<>
         <section className="my-4 mx-4">
-            <h1 className="text-3xl pb-4">All Clients</h1>
             {/* filters goes here */}
-                {clients && clients.length > 0 ? (
-                    <ul className="space-y-2">
+                { isLoading ? <LoadingSpinner/> : <> 
+                    {clients && clients.length > 0 ? (
+                        <ul className="space-y-2">
                         {clients.map((cardInfo) =>(<ClientCard data={cardInfo} key={cardInfo.id}/>))}
-                    </ul>
-                ): "No hay Datos"}
+                        </ul>
+                        ): "No hay Datos"}
+                    </>
+                }
         </section>
     </>
 
