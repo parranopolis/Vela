@@ -1,4 +1,4 @@
-import { ClientData } from '@/app/types'
+import { ClientData } from '@/types'
 import { db } from '@/lib/firebase/config'
 import { query, collection, getDocs, orderBy, limit, startAfter, DocumentSnapshot } from 'firebase/firestore'
 

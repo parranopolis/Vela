@@ -1,6 +1,6 @@
 'use client'
 import { signOut } from 'firebase/auth'
-import { auth } from '../../lib/firebase/config'
+import { auth } from '@/lib/firebase/config'
 import React from 'react';
 
 export default function ButtonSignOut({icon} : {icon: React.ReactNode}) {

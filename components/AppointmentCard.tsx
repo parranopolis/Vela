@@ -1,16 +1,6 @@
-import { AppointmentData, ClientData } from "@/app/types";
+import { AppointmentData, ClientData } from "@/types";
 import { clientFetchData } from "@/lib/services/appointmensts";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
-import { cookies } from "next/dist/server/request/cookies";
 import { useEffect, useState } from "react";
-
-// interface LeadData {
-//   name: string;
-//   lastName: string;
-//   date: string;
-//   associates: string[];
-//   leadStatus: 'hot' | 'warm' | 'cold';
-// }
 
  // Appointment Data Card
  // In this card we have info about the uncoming appointments, names, associates working on it, dates, status of the leads.

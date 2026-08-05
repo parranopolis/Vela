@@ -1,7 +1,7 @@
 'use client'
 import { useAuth } from "@/lib/firebase/auth-context";
 import { useEffect, useState } from "react";
-import { ClientData } from "../types";
+import { ClientData } from "@/types";
 import { clientsListFetchCard } from "@/lib/services/clients";
 import { LoadingSpinner } from "@/components/loading";
 
