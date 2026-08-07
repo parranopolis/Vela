@@ -1,6 +1,6 @@
 import { ClientData } from '@/types'
 import { db } from '@/lib/firebase/config'
-import { query, collection, getDocs, orderBy, limit, startAfter, DocumentSnapshot } from 'firebase/firestore'
+import { query, addDoc, collection, getDocs, orderBy, limit, startAfter, DocumentSnapshot } from 'firebase/firestore'
 
 export async function clientsListFetchCard(lastDoc?:DocumentSnapshot): Promise<{
     clientData: ClientData[]
@@ -20,3 +20,12 @@ export async function clientsListFetchCard(lastDoc?:DocumentSnapshot): Promise<{
     }
 }
 
+export async function setUserData(obj : object) {
+  try{
+    const collRef = await addDoc(collection(db, 'clients'), obj)  
+    //   const q = await setDoc(doc(db, 'clients'), obj)
+      return `document sent ${collRef.id}`
+    }catch(error){
+      return error
+    }
+}

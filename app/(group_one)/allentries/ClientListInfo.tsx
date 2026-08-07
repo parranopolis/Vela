@@ -17,6 +17,7 @@ export function ClientListInfo (){
             if(data) {
                 setClients(data.clientData)
                 setIsLoading(false)
+                console.log(data)
             }
         });
     },[user])
@@ -26,7 +27,7 @@ export function ClientListInfo (){
                 { isLoading ? <LoadingSpinner/> : <> 
                     {clients && clients.length > 0 ? (
                         <ul className="space-y-2">
-                        {clients.map((cardInfo) =>(<ClientCard data={cardInfo} key={cardInfo.id}/>))}
+                        {clients.map((cardInfo) =>(<ClientCard data={cardInfo} key={`${cardInfo.phoneNumber}-${cardInfo.birthdate}-${cardInfo.email}-${cardInfo.ownerId}`}/>))}
                         </ul>
                         ): "No hay Datos"}
                     </>
@@ -40,8 +41,8 @@ function ClientCard ({data} : { data: ClientData }){
     return <>
         <article className="flex justify-center gap-8 items-center my-4">
             <div className="flex flex-col bg-secondary rounded-2xl py-2 px-6 justify-items-start w-full">
-                <span className="text-xl">{data.name} {data.lastName}</span>
-                <span className="text-sm text-text-secondary italic font-extralight">{data.phone}</span>
+                <span className="text-xl">{data.firstName} {data.lastName}</span>
+                <span className="text-sm text-text-secondary italic font-extralight">{data.phoneNumber}</span>
                 <span className="text-sm italic">{data?.email}</span>
             </div>
             <div className="bg-dark-accent text-secondary rounded-full p-4">

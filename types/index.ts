@@ -1,11 +1,11 @@
 import { Timestamp } from 'firebase/firestore';
 
 interface UserData {
-    id: string;
-    name: string;
+    userId: string;
+    firstName: string;
     lastName: string;
     email: string;
-    phone: string;
+    phoneNumber: string;
     associateNumber: string;
     initials: string
 }
@@ -33,15 +33,15 @@ interface ClientData {
     id: string;
     ownerId: string;
     ownerInitials:string;
-    name: string;
+    firstName: string;
     lastName: string;
     notes: string
     dateCreatedAt: Timestamp;
     address?: string;
     city?: string;
     state: string;
-    zip?: string;
-    phone: string;
+    zipCode?: string;
+    phoneNumber: string;
     email?: string;
     birthdate?: string;
     anniversary?: string;
