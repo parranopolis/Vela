@@ -1,11 +1,8 @@
 'use client'
-// import { useAuth} from '@/lib/firebase/auth-context'
-import { ClientData, AppointmentData } from "@/types";
-import {useEffect, useState} from "react";
+import { ClientData } from "@/types";
+import React, { useEffect, useState} from "react";
 import { Timestamp } from "firebase/firestore";
-import { useAuth } from "@/lib/firebase/auth-context";
-import { UserFetchData } from "@/lib/services/users";
-import { setUserData } from "@/lib/services/clients";
+import { getCoOwners } from '@/lib/services/users'
 export function UserForm () {
     const currentDate = new Date()
 
@@ -18,7 +15,7 @@ export function UserForm () {
             firstName: '',
             lastName: '',
             notes: '',
-            dateCreatedAt: Timestamp.fromDate(new Date()),
+            dateCreatedAt: Timestamp.fromDate(currentDate),
             address: '',
             city: '',
             state: '',
@@ -47,28 +44,12 @@ export function UserForm () {
         return defaultState;
     });
 
-    const [appointmentInfo, setAppointmentInfo] = useState<AppointmentData>({
-        // verificar que se actualiza manual en la UI, 
-        // que se debe agregar justo despues de escribir en /clients
-        // y que se actualiza automaticamente del formulario anterior. 
-        // we have to update the client first and then update the appointment
-        // mira las notas del final.
-        
-        id: '',
-        primaryOwnerId: clientInfo.ownerId,
-        clientName: clientInfo.firstName,
-        clientLastName: clientInfo.lastName,
-        notes: clientInfo.notes,
-        createdAt: Timestamp.fromDate(currentDate),
-        date:  Timestamp.fromDate(currentDate), 
-        
-        coOwners: [],
-        coOwnersMeta: {},
-        clientId: '',
-        leadStatus: 'Hot', // agregar en la UI.. es a mano del usuario.
-        saleStatus: 'set_up', // agregar en la UI.. es a mano del usuario.
-    })
+    const [appointmentDate, setAppointmentDate] = useState(calculateAppointmentDate())
 
+    const handleChange2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault()
+        setAppointmentDate(e.target.value);
+    }
     // toma los cambios en los inputs si los llega haber
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -82,28 +63,56 @@ export function UserForm () {
     // maneja el envio del formulario a firebase
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Handle form submission logic here
-        console.log(clientInfo)
-        setUserData(clientInfo)
-        .then((data) => {
-            console.log(data)
-        })
+        // let clientId = null
+        let appointmentData = {}
+        // // Handle form submission logic here
+        // setUserData(clientInfo)
+        // .then((data) => {
+            appointmentData = {
+
+                id: '',
+                primaryOwnerId: clientInfo.ownerId,
+                clientName: clientInfo.firstName,
+                clientLastName: clientInfo.lastName,
+                notes: clientInfo.notes,
+                createdAt: Timestamp.fromDate(currentDate),
+                
+                date:  appointmentDate, // listo.
+                
+                clientId: 'data', // listo
+                coOwners: [], // lo sacas de la UI, construyes la info. 
+
+                coOwnersMeta: {}, // lo sacas de la UI, construyes la info. 
+                leadStatus: 'Hot', // agregar en la UI.. es a mano del usuario.
+                saleStatus: 'set_up', // agregar en la UI.. es a mano del usuario.    
+            }
+        // })
         // console.log(appointmentInfo)
+
+// coOwners: string[]; // array con los usersID de los owners
+//     coOwnersMeta: { 
+//         [userId: string]:{
+//             initials: string;
+//         }
+//     }
+        console.log(appointmentData)
+        console.log(clientInfo)
+
     };
 
     // call to userData collection and bring info about the user and update the state with data. 
-    const { user } = useAuth()
-    useEffect(()=>{
-        if(!user) return
-        UserFetchData(user.uid)
-        .then((data) => {
-            setClientInfo((prevData) => ({
-                ...prevData,
-                ownerInitials: data?.initials ?? ''
-            }))
-        })    
+    // const { user } = useAuth()
+    // useEffect(()=>{
+    //     if(!user) return
+    //     UserFetchData(user.uid)
+    //     .then((data) => {
+    //         setClientInfo((prevData) => ({
+    //             ...prevData,
+    //             ownerInitials: data?.initials ?? ''
+    //         }))
+    //     })    
         
-    },[user])
+    // },[user])
 
     return<>
         <section>
@@ -131,25 +140,21 @@ export function UserForm () {
                         <input onChange={handleChange} id='notes' name='notes' placeholder="Notes" className="border-2 border-black rounded-md p-1 clientDataInfo" required value={clientInfo.notes}/>
                     </label>
                 </article>
+                {/* aqui los datos del appintment, osea decir cuando sera agendado. */}
+                <input type="date" defaultValue={appointmentDate} onChange={handleChange2}/>
+                <article>
+                    Owner
+                    <div className='flex gap-4'>
+                        <CoOwners/>
+                    </div>
+                </article>
                 <article>
                     <label htmlFor="ringSize">Ring Size
                         <input onChange={handleChange} type='string' maxLength={2} id='ringSize' name='ringSize' placeholder="" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.ringSize}/>
                     </label>
                 </article>
-                <article>
-                    Owner
-                    <div className='flex gap-4'>
-                        <div>
-                            <span>SP</span>
-                        </div>
-                        <div>
-                            <span>WT</span>
-                        </div>
-                        <div>
-                            <span>AH</span>
-                        </div>
-                    </div>
-                </article>
+                <hr></hr>
+                
                 <article>
                     <label htmlFor="address">Address
                         <input onChange={handleChange} type='text' id='address' name='address' placeholder="Address" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.address}/>
@@ -186,6 +191,26 @@ export function UserForm () {
 
     </>
 }
+// calcula si la fecha es ta vacia, o si es del pasado. al cumplirse escoge 7 dias al futuro desde el dia de hoy.
+// de no se el caso contrario, escoge la fecha seleccionada desde el localStorage
+const calculateAppointmentDate = () =>{
+    if(typeof window !== 'undefined'){
+        const w = localStorage.getItem('appointmentData')
+        if(w){
+
+            const timestamp = JSON.parse(w); // parsea el string a objeto
+            const todayDate = new Date(); // obtiene el dia de hoy
+            todayDate.setDate(todayDate.getDate() + 7) 
+            const todayDateFormat_yyyyMMdd = todayDate.toLocaleDateString('en-CA'); //  
+            if(timestamp.nanoseconds == null){
+                return todayDateFormat_yyyyMMdd
+            }
+            const dateString = new Date(timestamp.seconds * 1000).toISOString().split('T')[0];
+            return dateString < todayDateFormat_yyyyMMdd ? todayDateFormat_yyyyMMdd : dateString
+            
+        }
+    }
+}
 
 // pedir datos de id y asi calcuar los datospara el appointment. como el coOwnersMeta
 // --------
@@ -193,12 +218,53 @@ export function UserForm () {
 // De la foto (prellenado, editable):
 // clientName, clientLastName, notes, date 
 // email, phoneNumber, address, city, state, zipCode, birthdate, anniversary, significantOtherName, significantOtherBirthdate, ringSize
+// owners
 // (si existe en la foto)
 // El usuario selecciona en el formulario:
-// leadStatus, saleStatus, owners
+// leadStatus, saleStatus,
 // Se calculan al submit:
+
 // id, primaryOwnerId, coOwners, coOwnersMeta, clientId, createdAt
 // date si no vino en la foto → hoy + 7 días
 
 // Con eso claro, tienes dos estados separados en el formulario: 
 // uno para ClientData y otro para AppointmentData. Al hacer submit escribes en ambas colecciones, y el clientId del appointment es el id que retorna Firestore al crear el cliente.
+
+function CoOwners () {
+    // traemos los datos del localStorage
+    // y chequeamos que info hay en la base de datos que coincidan con estas iniciales en /userData
+    // traemos todo lo que sea igual. 
+    // si hay 2 duplicados, decirle al usuario del conflicto y que el decida quien agregar
+    // para esto, se le debe mostrar ambos nombres. 
+    // de lo que el usuario decida, es el que quedara activo y listo para agregarse a appointmentData
+    const [initials, setInitiasl ] = useState('')
+    useEffect(() => {
+        if(typeof window !== 'undefined'){
+        const q = localStorage.getItem('coOwners')
+            if(q){
+                const w = JSON.parse(q)
+                // setInitiasl(w)
+                console.log(w)
+                
+                getCoOwners(w)
+                .then(data => {
+                    console.log(data)
+                })
+            }
+    }
+    }, [])
+
+    return <>
+    <div className='flex gap-4'>
+                        <div>
+                            <span>SP</span>
+                        </div>
+                        <div>
+                            <span>WT</span>
+                        </div>
+                        <div>
+                            <span>AH</span>
+                        </div>
+                    </div>
+    </>
+}

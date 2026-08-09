@@ -1,4 +1,4 @@
-import { doc, getDoc} from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, where} from 'firebase/firestore'
 
 // import { collection, DocumentSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
@@ -23,6 +23,28 @@ export async function UserFetchData (id : string): Promise<UserData | null>{
         console.error("Error fetching user:", error);
         return null;
     }
+}
+
+export async function getCoOwners(arr : Array<string>) {
+    try{
+        const coOwnerRef = collection(db, 'userData')
+        const coOwners = query(
+            coOwnerRef,
+            where('initials','in',[arr[0],arr[1],''])
+            // where('initials','==',arr[1]),
+            // where('initials','==',arr[2])
+        )
+        const querySnapshot = await getDocs(coOwners)
+
+        const items = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+       }))
+        return items
+    }catch(error){
+        console.log(error)
+    }
+
 }
 
 
