@@ -2,7 +2,7 @@ import { AuthProvider } from "@/lib/firebase/auth-context";
 import type { Metadata } from "next";
 import Script from 'next/script'
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css"
+import "@/app/globals.css"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

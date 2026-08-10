@@ -1,16 +1,6 @@
-import { AppointmentData, ClientData } from "@/app/types";
+import { AppointmentData, ClientData } from "@/types";
 import { clientFetchData } from "@/lib/services/appointmensts";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
-import { cookies } from "next/dist/server/request/cookies";
 import { useEffect, useState } from "react";
-
-// interface LeadData {
-//   name: string;
-//   lastName: string;
-//   date: string;
-//   associates: string[];
-//   leadStatus: 'hot' | 'warm' | 'cold';
-// }
 
  // Appointment Data Card
  // In this card we have info about the uncoming appointments, names, associates working on it, dates, status of the leads.
@@ -103,8 +93,8 @@ function OpenAppointmentDetails({clientInfo, onClose}: OpenAppointmentDetails) {
                     <span onClick={onClose}>X</span>
                 </div>
                 <article className='flex flex-col items-center justify-center'>
-                    <h2 className="text-3xl font-semibold">{data?.name} {data?.lastName}</h2>
-                    <p className="text-xl text-text-secondary italic">{data?.phone}</p>
+                    <h2 className="text-3xl font-semibold">{data?.firstName} {data?.lastName}</h2>
+                    <p className="text-xl text-text-secondary italic">{data?.phoneNumber}</p>
                     {/* <span><h3>{clientInfo.id}</h3></span> */}
                 </article>
                 <article className="">
@@ -122,7 +112,7 @@ function OpenAppointmentDetails({clientInfo, onClose}: OpenAppointmentDetails) {
                         <p>{data?.address}</p>
                         <span>{data?.city}, </span>
                         <span>{data?.state}, </span>
-                        <span>{data?.zip}</span>
+                        <span>{data?.zipCode}</span>
                     </div>
                 </article>
                 <article className="text-xl flex justify-around">

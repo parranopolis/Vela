@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/firebase/auth-context'
 import { AppointmentFetchData } from '@/lib/services/appointmensts'
-import {AppointmentCard} from '../../components/AppointmentCard'
-import { AppointmentData } from '../types';
+import {AppointmentCard} from '@/components/AppointmentCard'
+import { AppointmentData } from '@/types';
 import { LoadingSpinner } from '@/components/loading'
 
 interface rulesStructure {

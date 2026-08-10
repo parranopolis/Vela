@@ -1,6 +1,5 @@
 
 import { DashboardClients } from './DashboardClient'
-import { NavBar } from '@/components/bar'
 export default async function Dashboard(){
   const rules = {
     today_appointment : {
@@ -25,7 +24,6 @@ export default async function Dashboard(){
 
   }
   return <>
-    <NavBar/>
     <section className='grid '>
       <article className='today_appointment'>
         <DashboardClients rules={rules.today_appointment}/>

@@ -1,6 +1,6 @@
 'use client'
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
-import { auth } from '../../lib/firebase/config'
+import { auth } from '@/lib/firebase/config'
 export function GoogleButton({ text }: {text: string}) {
     const handleGoogleLogin = async () => {
         const provider = new GoogleAuthProvider()

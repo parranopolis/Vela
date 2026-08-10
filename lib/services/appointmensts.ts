@@ -1,5 +1,5 @@
 // funcion para traer todos los datos de Firebase
-import { AppointmentData, ClientData } from '@/app/types';
+import { AppointmentData, ClientData } from '@/types';
 import { db } from '../firebase/config'
 import { collection, query, where, getDocs, Timestamp, doc, getDoc, orderBy } from 'firebase/firestore'
 
