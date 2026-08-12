@@ -25,14 +25,12 @@ export async function UserFetchData (id : string): Promise<UserData | null>{
     }
 }
 
-export async function getCoOwners(arr : Array<string>) {
+export async function getCoOwners(arr : Array<string>): Promise<UserData[]> {
     try{
         const coOwnerRef = collection(db, 'userData')
         const coOwners = query(
             coOwnerRef,
-            where('initials','in',[arr[0],arr[1],''])
-            // where('initials','==',arr[1]),
-            // where('initials','==',arr[2])
+            where('initials','in',arr)
         )
         const querySnapshot = await getDocs(coOwners)
 
@@ -40,9 +38,10 @@ export async function getCoOwners(arr : Array<string>) {
             id: doc.id,
             ...doc.data()
        }))
-        return items
+        return items as unknown as UserData[]
     }catch(error){
         console.log(error)
+        return []
     }
 
 }

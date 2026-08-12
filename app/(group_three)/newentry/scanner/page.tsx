@@ -16,7 +16,7 @@ export default function Scanner (){
         let clienteInformationScannerRetriveData ={}
         UserFetchData(user.uid)
         .then((data) => {
-                clienteInformationScannerRetriveData = {
+            clienteInformationScannerRetriveData = {
                 id: '',
                 ownerId: user?.uid,
                 ownerInitials: data?.initials,
@@ -40,14 +40,13 @@ export default function Scanner (){
         })    
      
         
-        
         const createLocalStorageInfo = () => {
             const date = Timestamp.fromDate(new Date('2027-02-29'))
-            
+
             localStorage.setItem('clientData', JSON.stringify(clienteInformationScannerRetriveData))
             localStorage.setItem('appointmentData', JSON.stringify(date))
             // escanamos la foto y sacamos las iniciales de los coOwnwes. ponemos todo en texto, no importa que hay
-            localStorage.setItem('coOwners', JSON.stringify(['JT',"JA",'VC']))   
+            localStorage.setItem('coOwners', JSON.stringify(['VC','JT','JA'])) 
         }
     },[user])
     

@@ -1,8 +1,10 @@
 'use client'
-import { ClientData } from "@/types";
+import { ClientData, UserData } from "@/types";
 import React, { useEffect, useState} from "react";
 import { Timestamp } from "firebase/firestore";
 import { getCoOwners } from '@/lib/services/users'
+import { init } from "next/dist/compiled/webpack/webpack";
+import { userAgent } from "next/server";
 export function UserForm () {
     const currentDate = new Date()
 
@@ -53,7 +55,6 @@ export function UserForm () {
     // toma los cambios en los inputs si los llega haber
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        console.log(name, value)
         setClientInfo((prevData) => ({
             ...prevData,
             [name]: value
@@ -97,22 +98,9 @@ export function UserForm () {
 //     }
         console.log(appointmentData)
         console.log(clientInfo)
-
+            
+        // 
     };
-
-    // call to userData collection and bring info about the user and update the state with data. 
-    // const { user } = useAuth()
-    // useEffect(()=>{
-    //     if(!user) return
-    //     UserFetchData(user.uid)
-    //     .then((data) => {
-    //         setClientInfo((prevData) => ({
-    //             ...prevData,
-    //             ownerInitials: data?.initials ?? ''
-    //         }))
-    //     })    
-        
-    // },[user])
 
     return<>
         <section>
@@ -141,7 +129,7 @@ export function UserForm () {
                     </label>
                 </article>
                 {/* aqui los datos del appintment, osea decir cuando sera agendado. */}
-                <input type="date" defaultValue={appointmentDate} onChange={handleChange2}/>
+                <input type="date" id='date' defaultValue={appointmentDate} onChange={handleChange2}/>
                 <article>
                     Owner
                     <div className='flex gap-4'>
@@ -231,40 +219,102 @@ const calculateAppointmentDate = () =>{
 // uno para ClientData y otro para AppointmentData. Al hacer submit escribes en ambas colecciones, y el clientId del appointment es el id que retorna Firestore al crear el cliente.
 
 function CoOwners () {
-    // traemos los datos del localStorage
+    // traemos los datos del localStorage 
     // y chequeamos que info hay en la base de datos que coincidan con estas iniciales en /userData
     // traemos todo lo que sea igual. 
+    
     // si hay 2 duplicados, decirle al usuario del conflicto y que el decida quien agregar
     // para esto, se le debe mostrar ambos nombres. 
     // de lo que el usuario decida, es el que quedara activo y listo para agregarse a appointmentData
-    const [initials, setInitiasl ] = useState('')
+    // ----- 
+    // necesito mostrarlos todos, con estados independientes. 
+    // al que se le haga click agregarlo a un array
+    // se puede agregar maximo 3 elementos a ese array, 
+    // de querer agregar mas, se debe sacar alguno y agregar el otro. 
+
+    const [initials, setInitiasl ] = useState<UserData[]>([])
+    const [duplicates, setDupliates ] = useState(false)
+    const [readyToSent, setReadyToSent] = useState<UserData[]>([])
+    const [test, setTest ] = useState<string[]>([])
+
     useEffect(() => {
         if(typeof window !== 'undefined'){
         const q = localStorage.getItem('coOwners')
             if(q){
                 const w = JSON.parse(q)
-                // setInitiasl(w)
-                console.log(w)
-                
-                getCoOwners(w)
+                const filtered = w.filter((item:string) => item !== null && item !== undefined)
+                getCoOwners(filtered)
                 .then(data => {
-                    console.log(data)
+                    if(data){
+                        setInitiasl(data)
+                        if(filtered.length != data.length)setDupliates(true)
+                    }
                 })
             }
     }
     }, [])
 
-    return <>
-    <div className='flex gap-4'>
-                        <div>
-                            <span>SP</span>
-                        </div>
-                        <div>
-                            <span>WT</span>
-                        </div>
-                        <div>
-                            <span>AH</span>
-                        </div>
-                    </div>
-    </>
+const handleChange = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const elementId = e.currentTarget.id; 
+    
+    // 1. Target the first child element (the circle div) and cast it to HTMLElement
+    const innerCircle = e.currentTarget.firstElementChild as HTMLElement;
+    
+    if (!innerCircle) return; // Safety check
+
+    // 2. Check the class on the circle div itself
+    const isAlreadySelected = innerCircle.classList.contains('bg-navy-accent');
+
+    // 3. Limit selection to less than 3, OR allow deselection if already selected
+    if (test.length < 3 || isAlreadySelected) {
+        
+        // 4. Toggle classes on the inner circle, not the parent wrapper
+        innerCircle.classList.toggle('bg-navy-accent');
+        innerCircle.classList.toggle('bg-third-light');
+        innerCircle.classList.toggle('text-white');
+
+        // 5. Update state array
+        if (!isAlreadySelected) {
+            setTest((prev) => [...prev, elementId]);
+             initials.find(u => {
+                if(u.userId == elementId){
+                    const newReadyToSent = [...readyToSent, u]
+                    setReadyToSent(newReadyToSent)
+                    localStorage.setItem('coOwnersSelected', JSON.stringify(newReadyToSent))
+                }
+
+            })
+        } else {
+            setTest((prev) => prev.filter(id => id !== elementId));
+            readyToSent.find(u => {
+                if(u.userId == elementId){
+                    console.log(readyToSent.indexOf(u))
+                    const newReadyToSent = readyToSent.filter(n => n !== u)
+                    setReadyToSent(newReadyToSent)
+                    localStorage.setItem('coOwnersSelected', JSON.stringify(newReadyToSent))
+                }
+                
+            })
+        }
+    }
+    const q = localStorage.getItem('coOwnersSelected') ?? '[]'
+        console.log(JSON.parse(q))
+};
+
+    return initials.map((w) => {
+        return (
+            <div key={w.userId} id={w.userId} onClick={(e) => handleChange(e)}>
+                <div className={`border flex w-14 justify-center rounded-full p-4 bg-third-light`}>
+                    {w.initials}
+                </div>
+                {duplicates === false ? '' : (<>
+                    <div>{w.firstName}</div>
+                    <div>{w.lastName}</div>
+                </>
+                )
+                }
+            </div>
+            
+        )
+    })
 }
