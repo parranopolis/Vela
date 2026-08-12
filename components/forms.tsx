@@ -3,12 +3,18 @@ import { ClientData, UserData } from "@/types";
 import React, { useEffect, useState} from "react";
 import { Timestamp } from "firebase/firestore";
 import { getCoOwners } from '@/lib/services/users'
-import { init } from "next/dist/compiled/webpack/webpack";
-import { userAgent } from "next/server";
+
+/**
+* Form component for new entries; retrieves data from localStorage (configured in /scanner)
+* Prepares objects with the appropriate structures for submission to Firebase
+* Data includes information from inputs, divs, arrays, select elements, among others
+* Calculates dates and document co-owners.
+* @returns component
+ */
 export function UserForm () {
     const currentDate = new Date()
 
-    // aplica un lazy load en el estado en tiempo de ejecucion con los datos que vienen del localstorage
+    // Implement lazy loading for the state at runtime using data from localStorage.
         const [clientInfo, setClientInfo] = useState<ClientData>(() => {
         const defaultState: ClientData = {
             id: '',
@@ -36,7 +42,6 @@ export function UserForm () {
             if (data) {
                 try {
                     const parsedData = JSON.parse(data);
-                    // localStorage.removeItem('clientData'); // Wipes data immediately and cleanly
                     return { ...defaultState, ...parsedData };
                 } catch (e) {
                     console.error("Error parsing localstorage data", e);
@@ -47,12 +52,14 @@ export function UserForm () {
     });
 
     const [appointmentDate, setAppointmentDate] = useState(calculateAppointmentDate())
+    const [leadStatus, setLeadStatus ] = useState('Hot')
+
 
     const handleChange2 = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
         setAppointmentDate(e.target.value);
     }
-    // toma los cambios en los inputs si los llega haber
+    // captures changes in the inputs, if any
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setClientInfo((prevData) => ({
@@ -60,8 +67,7 @@ export function UserForm () {
             [name]: value
         }));
     };
-    
-    // maneja el envio del formulario a firebase
+    // handles form submission to Firebase
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // let clientId = null
@@ -69,6 +75,7 @@ export function UserForm () {
         // // Handle form submission logic here
         // setUserData(clientInfo)
         // .then((data) => {
+        console.log(appointmentDate)
             appointmentData = {
 
                 id: '',
@@ -78,14 +85,14 @@ export function UserForm () {
                 notes: clientInfo.notes,
                 createdAt: Timestamp.fromDate(currentDate),
                 
-                date:  appointmentDate, // listo.
+                date:  appointmentDate,
                 
-                clientId: 'data', // listo
+                clientId: 'data', 
                 coOwners: [], // lo sacas de la UI, construyes la info. 
 
                 coOwnersMeta: {}, // lo sacas de la UI, construyes la info. 
-                leadStatus: 'Hot', // agregar en la UI.. es a mano del usuario.
-                saleStatus: 'set_up', // agregar en la UI.. es a mano del usuario.    
+                leadStatus: leadStatus,
+                saleStatus: 'set_up',
             }
         // })
         // console.log(appointmentInfo)
@@ -98,16 +105,41 @@ export function UserForm () {
 //     }
         console.log(appointmentData)
         console.log(clientInfo)
-            
+        const q = localStorage.getItem('coOwnersSelected') ?? '[]'
+        console.log(JSON.parse(q))
         // 
     };
+
+    const handleLeadStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setLeadStatus(e.target.value)
+    }
+      useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        e.preventDefault();
+        e.returnValue = '';
+        };
+        
+        localStorage.removeItem('coOwners'); // Wipes data immediately and cleanly
+        // localStorage.removeItem('coOwnersSelected'); // Wipes data immediately and cleanly
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload)
+        };
+  }, []);
 
     return<>
         <section>
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}> 
-
                 <article>
                     <h1 className="text-2xl font-bold">Customer Information</h1>
+                </article>
+                <article>
+                    <label htmlFor="leadStatus">Select Lead Status</label>
+                    <select id="leadStatus" name='leadStatus' value={leadStatus} onChange={handleLeadStatus}>
+                        <option value="Hot">Hot</option>
+                        <option value="Warm">Warm</option>
+                        <option value="Cold">Cold</option>
+                    </select>
                 </article>
                 <article className='flex flex-col gap-4'>
                     <label htmlFor="firstName">First Name
@@ -128,7 +160,6 @@ export function UserForm () {
                         <input onChange={handleChange} id='notes' name='notes' placeholder="Notes" className="border-2 border-black rounded-md p-1 clientDataInfo" required value={clientInfo.notes}/>
                     </label>
                 </article>
-                {/* aqui los datos del appintment, osea decir cuando sera agendado. */}
                 <input type="date" id='date' defaultValue={appointmentDate} onChange={handleChange2}/>
                 <article>
                     Owner
@@ -179,8 +210,12 @@ export function UserForm () {
 
     </>
 }
-// calcula si la fecha es ta vacia, o si es del pasado. al cumplirse escoge 7 dias al futuro desde el dia de hoy.
-// de no se el caso contrario, escoge la fecha seleccionada desde el localStorage
+/**
+* Determines if the date is empty or in the past; if so, selects a date 7 days from today. 
+* Otherwise, retrieves the selected date from localStorage.
+* @returns A string in YYYY-MM-DD format representing the chosen date.
+*/
+
 const calculateAppointmentDate = () =>{
     if(typeof window !== 'undefined'){
         const w = localStorage.getItem('appointmentData')
@@ -200,38 +235,14 @@ const calculateAppointmentDate = () =>{
     }
 }
 
-// pedir datos de id y asi calcuar los datospara el appointment. como el coOwnersMeta
-// --------
-// Entonces el resumen final es:
-// De la foto (prellenado, editable):
-// clientName, clientLastName, notes, date 
-// email, phoneNumber, address, city, state, zipCode, birthdate, anniversary, significantOtherName, significantOtherBirthdate, ringSize
-// owners
-// (si existe en la foto)
-// El usuario selecciona en el formulario:
-// leadStatus, saleStatus,
-// Se calculan al submit:
-
-// id, primaryOwnerId, coOwners, coOwnersMeta, clientId, createdAt
-// date si no vino en la foto → hoy + 7 días
-
-// Con eso claro, tienes dos estados separados en el formulario: 
-// uno para ClientData y otro para AppointmentData. Al hacer submit escribes en ambas colecciones, y el clientId del appointment es el id que retorna Firestore al crear el cliente.
+/**
+*
+* Handles changes to co-owners, manages duplicates and display formatting,
+* and prepares everything to construct the final object for submission to Firestore. 
+* @returns A component containing the users to be displayed. 
+*/
 
 function CoOwners () {
-    // traemos los datos del localStorage 
-    // y chequeamos que info hay en la base de datos que coincidan con estas iniciales en /userData
-    // traemos todo lo que sea igual. 
-    
-    // si hay 2 duplicados, decirle al usuario del conflicto y que el decida quien agregar
-    // para esto, se le debe mostrar ambos nombres. 
-    // de lo que el usuario decida, es el que quedara activo y listo para agregarse a appointmentData
-    // ----- 
-    // necesito mostrarlos todos, con estados independientes. 
-    // al que se le haga click agregarlo a un array
-    // se puede agregar maximo 3 elementos a ese array, 
-    // de querer agregar mas, se debe sacar alguno y agregar el otro. 
-
     const [initials, setInitiasl ] = useState<UserData[]>([])
     const [duplicates, setDupliates ] = useState(false)
     const [readyToSent, setReadyToSent] = useState<UserData[]>([])
@@ -254,52 +265,45 @@ function CoOwners () {
     }
     }, [])
 
-const handleChange = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const elementId = e.currentTarget.id; 
-    
-    // 1. Target the first child element (the circle div) and cast it to HTMLElement
-    const innerCircle = e.currentTarget.firstElementChild as HTMLElement;
-    
-    if (!innerCircle) return; // Safety check
-
-    // 2. Check the class on the circle div itself
-    const isAlreadySelected = innerCircle.classList.contains('bg-navy-accent');
-
-    // 3. Limit selection to less than 3, OR allow deselection if already selected
-    if (test.length < 3 || isAlreadySelected) {
+    const handleChange = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        const elementId = e.currentTarget.id; 
         
-        // 4. Toggle classes on the inner circle, not the parent wrapper
-        innerCircle.classList.toggle('bg-navy-accent');
-        innerCircle.classList.toggle('bg-third-light');
-        innerCircle.classList.toggle('text-white');
+        const innerCircle = e.currentTarget.firstElementChild as HTMLElement;
+        
+        if (!innerCircle) return; // Safety check
 
-        // 5. Update state array
-        if (!isAlreadySelected) {
-            setTest((prev) => [...prev, elementId]);
-             initials.find(u => {
-                if(u.userId == elementId){
-                    const newReadyToSent = [...readyToSent, u]
-                    setReadyToSent(newReadyToSent)
-                    localStorage.setItem('coOwnersSelected', JSON.stringify(newReadyToSent))
-                }
+        const isAlreadySelected = innerCircle.classList.contains('bg-navy-accent');
 
-            })
-        } else {
-            setTest((prev) => prev.filter(id => id !== elementId));
-            readyToSent.find(u => {
-                if(u.userId == elementId){
-                    console.log(readyToSent.indexOf(u))
-                    const newReadyToSent = readyToSent.filter(n => n !== u)
-                    setReadyToSent(newReadyToSent)
-                    localStorage.setItem('coOwnersSelected', JSON.stringify(newReadyToSent))
-                }
-                
-            })
+        if (test.length < 3 || isAlreadySelected) {
+            
+            innerCircle.classList.toggle('bg-navy-accent');
+            innerCircle.classList.toggle('bg-third-light');
+            innerCircle.classList.toggle('text-white');
+
+            if (!isAlreadySelected) {
+                setTest((prev) => [...prev, elementId]);
+                initials.find(u => {
+                    if(u.userId == elementId){
+                        const newReadyToSent = [...readyToSent, u]
+                        setReadyToSent(newReadyToSent)
+                        localStorage.setItem('coOwnersSelected', JSON.stringify(newReadyToSent))
+                    }
+
+                })
+            } else {
+                setTest((prev) => prev.filter(id => id !== elementId));
+                readyToSent.find(u => {
+                    if(u.userId == elementId){
+                        const newReadyToSent = readyToSent.filter(n => n !== u)
+                        setReadyToSent(newReadyToSent)
+                        localStorage.setItem('coOwnersSelected', JSON.stringify(newReadyToSent))
+                    }
+                    
+                })
+            }
         }
-    }
-    const q = localStorage.getItem('coOwnersSelected') ?? '[]'
-        console.log(JSON.parse(q))
-};
+
+    };
 
     return initials.map((w) => {
         return (
