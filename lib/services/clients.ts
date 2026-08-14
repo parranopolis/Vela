@@ -1,6 +1,6 @@
 import { ClientData } from '@/types'
 import { db } from '@/lib/firebase/config'
-import { query, addDoc, collection, getDocs, orderBy, limit, startAfter, DocumentSnapshot } from 'firebase/firestore'
+import { query, addDoc, collection, getDocs, orderBy, limit, startAfter, DocumentSnapshot, doc, getDoc } from 'firebase/firestore'
 
 export async function clientsListFetchCard(lastDoc?:DocumentSnapshot): Promise<{
     clientData: ClientData[]
@@ -26,5 +26,25 @@ export async function setUserData(obj : object) {
       return collRef.id
     }catch(error){
       return error
+    }
+}
+
+
+export async function clientFetchData(clientId: string){ // move to clients.ts
+    try{
+        const docRef = doc(db, 'clients', clientId)
+        const docSnap = await getDoc(docRef)
+        if(docSnap.exists()){
+            return {
+                id: docSnap.id,
+                ...docSnap.data()
+            } as ClientData
+        }else{
+            console.log("No such document!")
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching client data:", error);
+        return null;
     }
 }

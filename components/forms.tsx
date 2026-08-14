@@ -4,6 +4,7 @@ import React, { useEffect, useState} from "react";
 import { Timestamp } from "firebase/firestore";
 import { getCoOwners } from '@/lib/services/users'
 import { setUserData } from '@/lib/services/clients'
+import { setUpAppointment } from "@/lib/services/appointmensts";
 
 /**
 * Form component for new entries; retrieves data from localStorage (configured in /scanner)
@@ -93,9 +94,11 @@ export function UserForm () {
         if(coOwners.length >=2 && coOwners.length <= 3 ){
             
         // Handle form submission logic here
-        setUserData(clientInfo)
-        .then((data) => {
-        console.log(data)
+            setUserData(clientInfo)
+            .then((data) => {
+                // console.log(data)
+            const q: Date = new Date(`${appointmentDate}T00:00:00Z`)
+
             appointmentData = {
                 id: data,
                 primaryOwnerId: clientInfo.ownerId,
@@ -103,14 +106,18 @@ export function UserForm () {
                 clientLastName: clientInfo.lastName,
                 notes: clientInfo.notes,
                 createdAt: Timestamp.fromDate(currentDate),
-                date:  appointmentDate,
+                date:  Timestamp.fromDate(q),
                 clientId: 'data', 
                 coOwners: coOwners,
                 coOwnersMeta: coOwnersMeta, 
                 leadStatus: leadStatus,
                 saleStatus: 'set_up',
             }
-            console.log(appointmentData)
+        // console.log(appointmentData)
+            setUpAppointment(appointmentData)
+            .then((data) => {
+                console.log(data)
+            })
         })
         }else{
             console.log('Check your TO rules')
@@ -130,7 +137,6 @@ export function UserForm () {
         e.returnValue = '';
         };
         
-        // localStorage.removeItem('coOwners'); // Wipes data immediately and cleanly
         localStorage.removeItem('coOwnersSelected'); // Wipes data immediately and cleanly
         window.addEventListener('beforeunload', handleBeforeUnload);
         return () => {
