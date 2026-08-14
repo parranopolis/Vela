@@ -7,6 +7,7 @@ export default function ButtonSignOut({icon} : {icon: React.ReactNode}) {
     const handleSignOut = async () => {
         try{
             await signOut(auth)
+            document.cookie = "session_token=; path=/; max-age=0; SameSite=Lax; Secure";
             window.location.href = '/login'
             console.log('User signed out successfully')
         } catch (error) {

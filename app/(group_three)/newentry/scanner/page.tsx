@@ -16,38 +16,37 @@ export default function Scanner (){
         let clienteInformationScannerRetriveData ={}
         UserFetchData(user.uid)
         .then((data) => {
-                clienteInformationScannerRetriveData = {
+            clienteInformationScannerRetriveData = {
                 id: '',
                 ownerId: user?.uid,
                 ownerInitials: data?.initials,
-                firstName: 'Maria',
-                lastName: 'Pineda',
-                notes: 'este es un usuario creado desde la UI',    
+                firstName: 'Josefina',
+                lastName: 'Royal',
+                notes: 'like some necklaces with matchign earrings',    
                 dateCreatedAt: Timestamp.fromDate(new Date()),
-                address: '00000 Street',
-                city: 'Sacrament',
-                state: 'TX',
-                zipCode: '22200',
-                phoneNumber: '99928882828',
-                email: 'test2@gmail.com',
-                birthdate: '12/14/1999',
-                anniversary: '06/15/2020',
-                significantOtherName: 'Marcos Parra',
+                address: '2261 S Buckly rd',
+                city: 'aurora',
+                state: 'CO',
+                zipCode: '80013',
+                phoneNumber: '23123123123',
+                email: 'royal.j25@gmail.com',
+                birthdate: '09/29/1989',
+                anniversary: '',
+                significantOtherName: '',
                 significantOtherBirthdate: '',
-                ringSize: '4',
+                ringSize: '',
             }
             createLocalStorageInfo()
         })    
      
         
-        
         const createLocalStorageInfo = () => {
             const date = Timestamp.fromDate(new Date('2027-02-29'))
-            
+
             localStorage.setItem('clientData', JSON.stringify(clienteInformationScannerRetriveData))
             localStorage.setItem('appointmentData', JSON.stringify(date))
             // escanamos la foto y sacamos las iniciales de los coOwnwes. ponemos todo en texto, no importa que hay
-            localStorage.setItem('coOwners', JSON.stringify(['JT',"JA",'VC']))   
+            localStorage.setItem('coOwners', JSON.stringify(['VC','JT','JA'])) 
         }
     },[user])
     

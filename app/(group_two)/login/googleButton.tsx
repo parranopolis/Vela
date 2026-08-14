@@ -6,10 +6,10 @@ export function GoogleButton({ text }: {text: string}) {
         const provider = new GoogleAuthProvider()
         try{
             const credential = await signInWithPopup(auth, provider)
-            // const token = await credential.user.getIdToken()
+            const token = await credential.user.getIdToken()
 
             // save the token in local storage
-            // document.cookie = `session_token=${token}; path=/; max-age=30; SameSite=Lax; Secure`
+            document.cookie = `session_token=${token}; path=/; max-age=600; SameSite=Lax; Secure`
             window.location.href = '/dashboard'
         } catch (error){
             console.log(error)

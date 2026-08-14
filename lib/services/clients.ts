@@ -23,8 +23,7 @@ export async function clientsListFetchCard(lastDoc?:DocumentSnapshot): Promise<{
 export async function setUserData(obj : object) {
   try{
     const collRef = await addDoc(collection(db, 'clients'), obj)  
-    //   const q = await setDoc(doc(db, 'clients'), obj)
-      return `document sent ${collRef.id}`
+      return collRef.id
     }catch(error){
       return error
     }
