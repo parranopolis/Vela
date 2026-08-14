@@ -3,6 +3,7 @@ import { ClientData, UserData } from "@/types";
 import React, { useEffect, useState} from "react";
 import { Timestamp } from "firebase/firestore";
 import { getCoOwners } from '@/lib/services/users'
+import { setUserData } from '@/lib/services/clients'
 
 /**
 * Form component for new entries; retrieves data from localStorage (configured in /scanner)
@@ -71,42 +72,52 @@ export function UserForm () {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // let clientId = null
-        let appointmentData = {}
-        // // Handle form submission logic here
-        // setUserData(clientInfo)
-        // .then((data) => {
-        console.log(appointmentDate)
-            appointmentData = {
+        // console.log(appointmentData)
+        // console.log(clientInfo)
+        const q = JSON.parse(localStorage.getItem('coOwnersSelected') || '[]')
+        const coOwners:string[] = [] // contains the id of all owners on this document
+        let coOwnersMeta = {} // contains the structure ready to sent to firestore
+        for (const {userId, initials} of q) {
+            coOwners.push(userId)
+            coOwnersMeta = {
+                ...coOwnersMeta,
+                [userId] : {
+                    "initials": initials
+                }
+            }
+        }
+        
+       
 
-                id: '',
+        let appointmentData = {}
+        if(coOwners.length >=2 && coOwners.length <= 3 ){
+            
+        // Handle form submission logic here
+        setUserData(clientInfo)
+        .then((data) => {
+        console.log(data)
+            appointmentData = {
+                id: data,
                 primaryOwnerId: clientInfo.ownerId,
                 clientName: clientInfo.firstName,
                 clientLastName: clientInfo.lastName,
                 notes: clientInfo.notes,
                 createdAt: Timestamp.fromDate(currentDate),
-                
                 date:  appointmentDate,
-                
                 clientId: 'data', 
-                coOwners: [], // lo sacas de la UI, construyes la info. 
-
-                coOwnersMeta: {}, // lo sacas de la UI, construyes la info. 
+                coOwners: coOwners,
+                coOwnersMeta: coOwnersMeta, 
                 leadStatus: leadStatus,
                 saleStatus: 'set_up',
             }
-        // })
-        // console.log(appointmentInfo)
-
-// coOwners: string[]; // array con los usersID de los owners
-//     coOwnersMeta: { 
-//         [userId: string]:{
-//             initials: string;
-//         }
-//     }
-        console.log(appointmentData)
-        console.log(clientInfo)
-        const q = localStorage.getItem('coOwnersSelected') ?? '[]'
-        console.log(JSON.parse(q))
+            console.log(appointmentData)
+        })
+        }else{
+            console.log('Check your TO rules')
+        }
+        // console.log(clientInfo)
+        // const q = localStorage.getItem('coOwnersSelected') ?? '[]'
+        // console.log(JSON.parse(q))
         // 
     };
 
@@ -119,8 +130,8 @@ export function UserForm () {
         e.returnValue = '';
         };
         
-        localStorage.removeItem('coOwners'); // Wipes data immediately and cleanly
-        // localStorage.removeItem('coOwnersSelected'); // Wipes data immediately and cleanly
+        // localStorage.removeItem('coOwners'); // Wipes data immediately and cleanly
+        localStorage.removeItem('coOwnersSelected'); // Wipes data immediately and cleanly
         window.addEventListener('beforeunload', handleBeforeUnload);
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload)

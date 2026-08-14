@@ -2,8 +2,12 @@ import { AppointmentData, ClientData } from "@/types";
 import { clientFetchData } from "@/lib/services/appointmensts";
 import { useEffect, useState } from "react";
 
- // Appointment Data Card
- // In this card we have info about the uncoming appointments, names, associates working on it, dates, status of the leads.
+/**
+ * Appointment Data Card
+ * In this card we have info about the uncoming appointments, names, associates working on it, dates, status of the leads.
+ * @param CardInfo;
+ * @returns UI component. -> info about appointments
+ */ 
 export function AppointmentCard({CardInfo}: {CardInfo: AppointmentData}) {
     const [activeId, setActiveId] = useState<string | null>(null)
     const leadColors:Record<string,string> = {

@@ -57,7 +57,7 @@ export async function AppointmentFetchData(userId: string, saleStatus:string) {
   }
 } 
 
-export async function clientFetchData(clientId: string){
+export async function clientFetchData(clientId: string){ // move to clients.ts
     try{
         const docRef = doc(db, 'clients', clientId)
         const docSnap = await getDoc(docRef)
