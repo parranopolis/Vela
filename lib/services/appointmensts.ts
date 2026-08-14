@@ -1,15 +1,21 @@
-// funcion para traer todos los datos de Firebase
-import { AppointmentData, ClientData } from '@/types';
+import { AppointmentData } from '@/types';
 import { db } from '../firebase/config'
-import { collection, query, where, getDocs, Timestamp, doc, getDoc, orderBy } from 'firebase/firestore'
+import { collection, addDoc, query, where, getDocs, Timestamp, orderBy } from 'firebase/firestore'
+/**
+ * Bring Information from the Appointments collection in firebase
+ * it decide whats the leadStatus on the appointment and build the query base on what the user needs to see
+ * the parameter are the followings. 
+ * toda's Date -> todayDate+set_up
+ * pending Calls  -> todayDate+pending_callback
+ * never called -> date < todayDate + pending callback.
+ * @param userId 
+ * @param saleStatus 
+ * @returns all the info that match the query.
+ */
 
 export async function AppointmentFetchData(userId: string, saleStatus:string) {
 
-// decidir que parametros hay que llamar
 
-// lo de hoy que seria -> todayDate+set_up
-// llamadas pendientes que seria -> todayDate+pending_callback
-// y lo que nunca se llamo -> date < todayDate + pending callback.
 
     const startOfToday = new Date()
     startOfToday.setHours(0,0,0,0)
@@ -19,7 +25,7 @@ export async function AppointmentFetchData(userId: string, saleStatus:string) {
     
     try{
         const appointmentsRef = collection(db, 'appointments')
-        // this works perfect for set_up and pending_callbacks
+        // this brings the info for set_up and pending_callbacks
         const today = query(
             appointmentsRef,
             where('coOwners', 'array-contains', userId),
@@ -28,21 +34,16 @@ export async function AppointmentFetchData(userId: string, saleStatus:string) {
             where('date', '<=', Timestamp.fromDate(endOfToday)),
             orderBy('date'),
         )
-
-
-        // arrays-contains no se puede usar en la misma query del not-in.. piensa como separarlo 
-        // chequea el status de follow up. no importa, este es solo para fechas vencidads que no son sale_closed o discarted. 
+        // this brings the info for follow_up
         const follow_up = query(
             appointmentsRef,
             where('coOwners', 'array-contains', userId),
             where('saleStatus', 'in', ['set_up', 'pending_callback']),
             where('date', '<', Timestamp.fromDate(startOfToday)),
-            // where('date', '<=', Timestamp.fromDate(endOfToday)),
             orderBy('date'),
         )
 
-        // const querySnapshot = await getDocs(q)
-        // const querySnapshot = await getDocs(follow_up)
+        
         const querySnapshot = saleStatus === 'follow_up' 
             ? await getDocs(follow_up)
             : await getDocs(today)
@@ -57,21 +58,23 @@ export async function AppointmentFetchData(userId: string, saleStatus:string) {
   }
 } 
 
-export async function clientFetchData(clientId: string){ // move to clients.ts
-    try{
-        const docRef = doc(db, 'clients', clientId)
-        const docSnap = await getDoc(docRef)
-        if(docSnap.exists()){
-            return {
-                id: docSnap.id,
-                ...docSnap.data()
-            } as ClientData
-        }else{
-            console.log("No such document!")
-            return null;
-        }
-    } catch (error) {
-        console.error("Error fetching client data:", error);
-        return null;
-    }
+/**
+ * write data in appointments collection in firebase.
+ * @param 
+ */
+export async function setUpAppointment(objAppointmentData : object) {
+   try{
+    const collRef = await addDoc(collection(db, 'appointments'), objAppointmentData)
+    return collRef.id
+   } catch(error){
+    console.log(error)
+   }
 }
+// export async function setUserData(obj : object) {
+//   try{
+//     const collRef = await addDoc(collection(db, 'clients'), obj)  
+//       return collRef.id
+//     }catch(error){
+//       return error
+//     }
+// }

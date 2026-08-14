@@ -1,5 +1,5 @@
 import { AppointmentData, ClientData } from "@/types";
-import { clientFetchData } from "@/lib/services/appointmensts";
+import { clientFetchData } from "@/lib/services/clients";
 import { useEffect, useState } from "react";
 
 /**
