@@ -46,7 +46,7 @@ export default function Scanner (){
             localStorage.setItem('clientData', JSON.stringify(clienteInformationScannerRetriveData))
             localStorage.setItem('appointmentData', JSON.stringify(date))
             // escanamos la foto y sacamos las iniciales de los coOwnwes. ponemos todo en texto, no importa que hay
-            localStorage.setItem('coOwners', JSON.stringify(['SP','JT','JA'])) 
+            localStorage.setItem('coOwners', JSON.stringify(['SP','VC','JA'])) 
         }
     },[user])
     
