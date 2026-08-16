@@ -5,6 +5,8 @@ import { Timestamp } from "firebase/firestore";
 import { getCoOwners } from '@/lib/services/users'
 import { setUserData } from '@/lib/services/clients'
 import { setUpAppointment } from "@/lib/services/appointmensts";
+import { auth } from "@/lib/firebase/config";
+import { useAuth } from "@/lib/firebase/auth-context";
 
 /**
 * Form component for new entries; retrieves data from localStorage (configured in /scanner)
@@ -15,8 +17,9 @@ import { setUpAppointment } from "@/lib/services/appointmensts";
  */
 export function UserForm () {
     const currentDate = new Date()
-
+    const { user } = useAuth()
     // Implement lazy loading for the state at runtime using data from localStorage.
+        const [warning, setWarning ]= useState('')
         const [clientInfo, setClientInfo] = useState<ClientData>(() => {
         const defaultState: ClientData = {
             id: '',
@@ -72,9 +75,6 @@ export function UserForm () {
     // handles form submission to Firebase
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // let clientId = null
-        // console.log(appointmentData)
-        // console.log(clientInfo)
         const q = JSON.parse(localStorage.getItem('coOwnersSelected') || '[]')
         const coOwners:string[] = [] // contains the id of all owners on this document
         let coOwnersMeta = {} // contains the structure ready to sent to firestore
@@ -88,44 +88,45 @@ export function UserForm () {
             }
         }
         
-       
-
         let appointmentData = {}
-        if(coOwners.length >=2 && coOwners.length <= 3 ){
-            
-        // Handle form submission logic here
-            setUserData(clientInfo)
-            .then((data) => {
-                // console.log(data)
-            const q: Date = new Date(`${appointmentDate}T00:00:00Z`)
+        if(user?.uid){
+            if(coOwners.includes(user.uid)){
+                if(coOwners.length >=2 && coOwners.length <= 3){
+                
+                // // Handle form submission logic here
+                        setUserData(clientInfo)
+                    .then((data) => {
+                        // console.log(data)
+                    const q: Date = new Date(`${appointmentDate}T00:00:00Z`)
 
-            appointmentData = {
-                id: data,
-                primaryOwnerId: clientInfo.ownerId,
-                clientName: clientInfo.firstName,
-                clientLastName: clientInfo.lastName,
-                notes: clientInfo.notes,
-                createdAt: Timestamp.fromDate(currentDate),
-                date:  Timestamp.fromDate(q),
-                clientId: 'data', 
-                coOwners: coOwners,
-                coOwnersMeta: coOwnersMeta, 
-                leadStatus: leadStatus,
-                saleStatus: 'set_up',
+                    appointmentData = {
+                        id: data,
+                        primaryOwnerId: clientInfo.ownerId,
+                        clientName: clientInfo.firstName,
+                        clientLastName: clientInfo.lastName,
+                        notes: clientInfo.notes,
+                        createdAt: Timestamp.fromDate(currentDate),
+                        date:  Timestamp.fromDate(q),
+                        clientId: 'data', 
+                        coOwners: coOwners,
+                        coOwnersMeta: coOwnersMeta, 
+                        leadStatus: leadStatus,
+                        saleStatus: 'set_up',
+                    }
+                // console.log(appointmentData)
+                    setUpAppointment(appointmentData)
+                    .then((data) => {
+                        console.log(data)
+                    })
+                })
+                }else{
+                    alert("Check your TO's rules")
+                }
+            }else{
+                alert("Add yourselft as a Owner")
             }
-        // console.log(appointmentData)
-            setUpAppointment(appointmentData)
-            .then((data) => {
-                console.log(data)
-            })
-        })
-        }else{
-            console.log('Check your TO rules')
+
         }
-        // console.log(clientInfo)
-        // const q = localStorage.getItem('coOwnersSelected') ?? '[]'
-        // console.log(JSON.parse(q))
-        // 
     };
 
     const handleLeadStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
