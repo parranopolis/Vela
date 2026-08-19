@@ -5,7 +5,6 @@ import { Timestamp } from "firebase/firestore";
 import { getCoOwners } from '@/lib/services/users'
 import { setUserData } from '@/lib/services/clients'
 import { setUpAppointment } from "@/lib/services/appointmensts";
-import { auth } from "@/lib/firebase/config";
 import { useAuth } from "@/lib/firebase/auth-context";
 
 /**
@@ -19,7 +18,6 @@ export function UserForm () {
     const currentDate = new Date()
     const { user } = useAuth()
     // Implement lazy loading for the state at runtime using data from localStorage.
-        const [warning, setWarning ]= useState('')
         const [clientInfo, setClientInfo] = useState<ClientData>(() => {
         const defaultState: ClientData = {
             id: '',
@@ -236,7 +234,7 @@ export function UserForm () {
 
 const calculateAppointmentDate = () =>{
     if(typeof window !== 'undefined'){
-        const w = localStorage.getItem('appointmentData')
+        const w = localStorage.getItem('appointmentDate')
         if(w){
 
             const timestamp = JSON.parse(w); // parsea el string a objeto
