@@ -69,6 +69,7 @@ export default function Scanner (){
                 const data = await response.json()
                 const cleaned = data.data.replace(/```json\n|```/g, '').trim()
                 const parsed = JSON.parse(cleaned)
+                
                 // const clienteInformationScannerRetriveData = { // respuesta del post simulada para no gastar tokens, 
                 // // es la simulacion de lo que muestra parsed
                 // // la info actual es de la foto IMG_3644.jpeg
