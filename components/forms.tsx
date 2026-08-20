@@ -165,7 +165,7 @@ export function UserForm () {
                         <input onChange={handleChange} type='text' id='lastName' name='lastName' placeholder="Last Name" className="border-2 border-black rounded-md p-1 clientDataInfo" required value={clientInfo.lastName}/>
                     </label>
                     <label htmlFor="phoneNumber">Phone Number
-                        <input onChange={handleChange} type='text' maxLength={10} pattern="[0-9]*"id='phoneNumber' name='phoneNumber' placeholder="Phone Number" className="border-2 border-black rounded-md p-1 clientDataInfo" required value={clientInfo.phoneNumber}/>
+                        <input onChange={handleChange} type='text' maxLength={14} id='phoneNumber' name='phoneNumber' placeholder="Phone Number" className="border-2 border-black rounded-md p-1 clientDataInfo" required value={clientInfo.phoneNumber}/>
                     </label>
                     <label htmlFor="email">Email
                         <input onChange={handleChange} type='email' id='email' name='email' placeholder="Email" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.email}/>
@@ -267,6 +267,7 @@ function CoOwners () {
     useEffect(() => {
         if(typeof window !== 'undefined'){
         const q = localStorage.getItem('coOwners')
+        
             if(q){
                 const w = JSON.parse(q)
                 const filtered = w.filter((item:string) => item !== null && item !== undefined)

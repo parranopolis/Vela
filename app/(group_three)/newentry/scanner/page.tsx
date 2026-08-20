@@ -88,19 +88,16 @@ export default function Scanner (){
                 UserFetchData(user.uid)
                 .then(data => {
                     if(!data) return
-                    const finalObj = {
+                    const clietnObj = {
                         ...parsed,
                         ownerId : data.userId,
                         ownerInitials: data?.initials,
                         dateCreatedAt: Timestamp.fromDate(new Date()),
                         id: ''
                     }
-                    
-                    console.log(finalObj)
-                    
-                    createLocalStorageInfo(finalObj)
+                    const coOwners = parsed.coOwners                    
+                    createLocalStorageInfo(clietnObj,coOwners)
                 })
-                // console.log(parsed)
             }catch(error){
                 console.log(error)
             }
@@ -137,15 +134,17 @@ function convertToBase64(image: File): Promise<string | ArrayBuffer | null>{
     })
 }
 
-const createLocalStorageInfo = (obj: object) => {
+const createLocalStorageInfo = (client: object, coOwners: Array<string> ) => {
+    localStorage.clear
     const targetDate = new Date();
     targetDate.setDate(targetDate.getDate() + 7);
 
 
     const timestamp = Timestamp.fromDate(targetDate);
 
-    localStorage.setItem('clientData', JSON.stringify(obj))
+    localStorage.setItem('clientData', JSON.stringify(client))
     localStorage.setItem('appointmentDate', JSON.stringify(timestamp))
     // escanamos la foto y sacamos las iniciales de los coOwnwes. ponemos todo en texto, no importa que hay
-    // localStorage.setItem('coOwners', JSON.stringify(['SP','VC','JA']))  // mostrar todos y que el usuario decida. 
+    localStorage.setItem('coOwners', JSON.stringify(coOwners))  // mostrar todos y que el usuario decida. 
+    console.log(localStorage)
 }

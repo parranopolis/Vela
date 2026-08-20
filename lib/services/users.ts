@@ -26,6 +26,7 @@ export async function UserFetchData (id : string): Promise<UserData | null>{
 }
 
 export async function getCoOwners(arr : Array<string>): Promise<UserData[]> {
+    console.log(arr)
     try{
         const coOwnerRef = collection(db, 'userData')
         const coOwners = query(
