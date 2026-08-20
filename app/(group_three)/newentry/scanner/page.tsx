@@ -3,9 +3,6 @@ import { useAuth } from "@/lib/firebase/auth-context";
 import { Timestamp } from "firebase/firestore";
 import Link from "next/link";
 import { UserFetchData } from '@/lib/services/users'
-import React, { useState, useEffect } from "react";
-import { ExtractInfoBase64Image } from "@/app/api/extract-client/route";
-import { ClientData } from "@/types";
 export default function Scanner (){
 
 
