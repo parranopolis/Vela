@@ -2,7 +2,7 @@
 import { ClientData, UserData } from "@/types";
 import React, { useEffect, useState} from "react";
 import { Timestamp } from "firebase/firestore";
-import { getCoOwners } from '@/lib/services/users'
+import { getAllUserData, getCoOwners } from '@/lib/services/users'
 import { setUserData } from '@/lib/services/clients'
 import { setUpAppointment } from "@/lib/services/appointmensts";
 import { useAuth } from "@/lib/firebase/auth-context";
@@ -75,7 +75,7 @@ export function UserForm () {
         e.preventDefault();
         const q = JSON.parse(localStorage.getItem('coOwnersSelected') || '[]')
         const coOwners:string[] = [] // contains the id of all owners on this document
-        let coOwnersMeta = {} // contains the structure ready to sent to firestore
+        let coOwnersMeta = {} // contains the co-Owners structure ready to sent to firestore
         for (const {userId, initials} of q) {
             coOwners.push(userId)
             coOwnersMeta = {
@@ -91,12 +91,11 @@ export function UserForm () {
             if(coOwners.includes(user.uid)){
                 if(coOwners.length >=2 && coOwners.length <= 3){
                 
-                // // Handle form submission logic here
-                        setUserData(clientInfo)
+                    setUserData(clientInfo) // set up new client information. 
                     .then((data) => {
-                        // console.log(data)
-                    const q: Date = new Date(`${appointmentDate}T00:00:00Z`)
-
+                    const futureAppointmentDate: Date = new Date(`${appointmentDate}T00:00:00Z`)
+                    
+                    // create the whole object to sent it to firebase and create the appointment
                     appointmentData = {
                         id: data,
                         primaryOwnerId: clientInfo.ownerId,
@@ -104,14 +103,13 @@ export function UserForm () {
                         clientLastName: clientInfo.lastName,
                         notes: clientInfo.notes,
                         createdAt: Timestamp.fromDate(currentDate),
-                        date:  Timestamp.fromDate(q),
+                        date:  Timestamp.fromDate(futureAppointmentDate),
                         clientId: data, 
                         coOwners: coOwners,
                         coOwnersMeta: coOwnersMeta, 
                         leadStatus: leadStatus,
                         saleStatus: 'set_up',
                     }
-                // console.log(appointmentData)
                     setUpAppointment(appointmentData)
                     .then((data) => {
                         console.log(data)
@@ -130,7 +128,8 @@ export function UserForm () {
     const handleLeadStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setLeadStatus(e.target.value)
     }
-      useEffect(() => {
+    // clean the local Storage if the page gets re-loaded
+    useEffect(() => {
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
         e.preventDefault();
         e.returnValue = '';
@@ -259,23 +258,25 @@ const calculateAppointmentDate = () =>{
 */
 
 function CoOwners () {
-    const [initials, setInitiasl ] = useState<UserData[]>([])
-    const [duplicates, setDupliates ] = useState(false)
+    const [initials, setInitials ] = useState<UserData[]>([])
+    const [coOwnersInitialError, setCoOwnersInitialError ] = useState(false)
     const [readyToSent, setReadyToSent] = useState<UserData[]>([])
     const [test, setTest ] = useState<string[]>([])
 
     useEffect(() => {
         if(typeof window !== 'undefined'){
-        const q = localStorage.getItem('coOwners')
+        const coOwnersLocalStorageSavedData = localStorage.getItem('coOwners')
         
-            if(q){
-                const w = JSON.parse(q)
+            if(coOwnersLocalStorageSavedData){
+                const w = JSON.parse(coOwnersLocalStorageSavedData)
                 const filtered = w.filter((item:string) => item !== null && item !== undefined)
                 getCoOwners(filtered)
                 .then(data => {
                     if(data){
-                        setInitiasl(data)
-                        if(filtered.length != data.length)setDupliates(true)
+                        if(filtered.length != data.length)setCoOwnersInitialError(true)
+                            console.log(data)
+                            console.log(filtered)
+                            setInitials(data)
                     }
                 })
             }
@@ -321,21 +322,32 @@ function CoOwners () {
         }
 
     };
-
-    return initials.map((w) => {
-        return (
-            <div key={w.userId} id={w.userId} onClick={(e) => handleChange(e)}>
-                <div className={`border flex w-14 justify-center rounded-full p-4 bg-third-light`}>
-                    {w.initials}
-                </div>
-                {duplicates === false ? '' : (<>
-                    <div>{w.firstName}</div>
-                    <div>{w.lastName}</div>
-                </>
+    const getAllUsers = () =>{
+        getAllUserData()
+        .then((data) => {
+            if(data){
+                setInitials(data)
+            }
+        })
+    }
+    return (<>
+        {initials.length === 0 ? 'Loading Co-Owners': <>
+            {initials.map((w) => {
+                return (
+                    <div key={w.userId} id={w.userId} onClick={(e) => handleChange(e)}>
+                        <div className={`border flex w-14 justify-center rounded-full p-4 bg-third-light`}>
+                            {w.initials}
+                        </div>
+                        {coOwnersInitialError === false ? '' : (<>
+                            <div>{w.firstName}</div>
+                            <div>{w.lastName}</div>
+                        </>
+                        )
+                    }
+                    </div>
                 )
-                }
-            </div>
-            
-        )
-    })
+            })}
+            {coOwnersInitialError === false ? '' : (<div onClick={getAllUsers} className="bg-secondary text-black flex justify-center items-center rounded-full w-14 border h-14"><ion-icon name="add-outline"></ion-icon></div>)}
+        </>}
+    </>)
 }

@@ -26,7 +26,6 @@ export async function UserFetchData (id : string): Promise<UserData | null>{
 }
 
 export async function getCoOwners(arr : Array<string>): Promise<UserData[]> {
-    console.log(arr)
     try{
         const coOwnerRef = collection(db, 'userData')
         const coOwners = query(
@@ -43,6 +42,22 @@ export async function getCoOwners(arr : Array<string>): Promise<UserData[]> {
     }catch(error){
         console.log(error)
         return []
+    }
+}
+
+export async function getAllUserData(): Promise<UserData[] | null> {
+    try{
+        
+        const querySnapshot = await getDocs(collection(db, 'userData'))
+
+        const users = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }))
+        return users as unknown as UserData[]
+    }catch(error){
+        console.log(error)
+        return null
     }
 
 }

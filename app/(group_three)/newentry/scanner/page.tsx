@@ -95,14 +95,14 @@ export default function Scanner (){
                         dateCreatedAt: Timestamp.fromDate(new Date()),
                         id: ''
                     }
-                    const coOwners = parsed.coOwners                    
+                    const coOwners = parsed.coOwners 
+                    // const coOwners = ['SP','MK','JA']
                     createLocalStorageInfo(clietnObj,coOwners)
                 })
             }catch(error){
                 console.log(error)
             }
         }
-
     }
 
     const deleteLocalStorage = () =>{
