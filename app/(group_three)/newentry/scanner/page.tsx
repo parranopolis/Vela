@@ -37,7 +37,6 @@ export default function Scanner (){
                 const data = await response.json()
                 const cleaned = data.data.replace(/```json\n|```/g, '').trim()
                 const parsed = JSON.parse(cleaned)
-                console.log(parsed)
                 if(Object.hasOwn(parsed, 'error')){
                     setIsloading(false)
                     setIsError("We couldn't recognize this image as a customer sheet; please try again.")
@@ -105,5 +104,4 @@ const createLocalStorageInfo = (client: object, coOwners: Array<string> ) => {
     localStorage.setItem('appointmentDate', JSON.stringify(timestamp))
     // escanamos la foto y sacamos las iniciales de los coOwnwes. ponemos todo en texto, no importa que hay
     localStorage.setItem('coOwners', JSON.stringify(coOwners))  // mostrar todos y que el usuario decida. 
-    console.log(localStorage)
 }

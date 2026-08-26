@@ -3,9 +3,10 @@ import { ClientData, UserData } from "@/types";
 import React, { useEffect, useState} from "react";
 import { Timestamp } from "firebase/firestore";
 import { getAllUserData, getCoOwners } from '@/lib/services/users'
-import { setUserData } from '@/lib/services/clients'
+import { setClientData, searchClientDuplicates } from '@/lib/services/clients'
 import { setUpAppointment } from "@/lib/services/appointmensts";
 import { useAuth } from "@/lib/firebase/auth-context";
+import { useRouter } from "next/navigation";
 
 /**
 * Form component for new entries; retrieves data from localStorage (configured in /scanner)
@@ -15,6 +16,7 @@ import { useAuth } from "@/lib/firebase/auth-context";
 * @returns component
  */
 export function UserForm () {
+    const route = useRouter()
     const currentDate = new Date()
     const { user } = useAuth()
     // Implement lazy loading for the state at runtime using data from localStorage.
@@ -90,13 +92,20 @@ export function UserForm () {
         if(user?.uid){
             if(coOwners.includes(user.uid)){
                 if(coOwners.length >=2 && coOwners.length <= 3){
-                
-                    setUserData(clientInfo) // set up new client information. 
-                    .then((data) => {
-                    const futureAppointmentDate: Date = new Date(`${appointmentDate}T00:00:00Z`)
-                    
-                    // create the whole object to sent it to firebase and create the appointment
-                    appointmentData = {
+                    searchClientDuplicates(clientInfo.phoneNumber) // check if we have another user with same phone number
+                    .then((data) =>{
+                            if(data && data.length > 0){ // if we have it, return the info.
+                                    return data[0].id // return the user ID
+                                }else{ // if not, create a new user
+                                    return setClientData(clientInfo) // set up new client information. 
+                                }
+                        })
+                        .then((data) => {
+                        console.log(data)
+                        const futureAppointmentDate: Date = new Date(`${appointmentDate}T00:00:00Z`)
+                            
+                        // create the whole object to sent it to firebase and create the appointment
+                        appointmentData = {
                         id: data,
                         primaryOwnerId: clientInfo.ownerId,
                         clientName: clientInfo.firstName,
@@ -114,6 +123,9 @@ export function UserForm () {
                     .then((data) => {
                         console.log(data)
                     })
+                    alert('Appointment Successfully Created')
+                    localStorage.clear()
+                    route.push('/dashboard')
                 })
                 }else{
                     alert("Check your TO's rules")
@@ -125,6 +137,7 @@ export function UserForm () {
         }
     };
 
+    // const createAppointment = (clientInfo)
     const handleLeadStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setLeadStatus(e.target.value)
     }
@@ -141,6 +154,16 @@ export function UserForm () {
             window.removeEventListener('beforeunload', handleBeforeUnload)
         };
   }, []);
+
+  useEffect(() =>{
+    searchClientDuplicates(clientInfo.phoneNumber) // check if we have another user with same phone number
+                    .then((data) =>{
+                        if(data && data.length > 0){ // if we have it, return the info.
+                            alert('This Client Already Exist.')
+                                return data[0].id // return the user ID
+                            }
+                    })
+  },[clientInfo.phoneNumber])
 
     return<>
         <section>
@@ -274,8 +297,6 @@ function CoOwners () {
                 .then(data => {
                     if(data){
                         if(filtered.length != data.length)setCoOwnersInitialError(true)
-                            console.log(data)
-                            console.log(filtered)
                             setInitials(data)
                     }
                 })
