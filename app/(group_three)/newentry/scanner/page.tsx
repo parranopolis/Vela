@@ -1,59 +1,20 @@
 'use client'
 import { useAuth } from "@/lib/firebase/auth-context";
 import { Timestamp } from "firebase/firestore";
-import Link from "next/link";
 import { UserFetchData } from '@/lib/services/users'
+import { useRouter } from "next/navigation";
+import {useState} from 'react'
+import { LoadingSpinner } from "@/components/loading";
 export default function Scanner (){
 
-
-
     const { user } = useAuth()
- 
-
-    // useEffect(() => {
-    //     if(!user) return
-    //     let clienteInformationScannerRetriveData ={}
-    //     UserFetchData(user.uid)
-    //     .then((data) => {
-    //         clienteInformationScannerRetriveData = {
-    //             id: '',
-    //             ownerId: user?.uid,
-    //             ownerInitials: data?.initials,
-    //             firstName: 'Josefina',
-    //             lastName: 'Royal',
-    //             notes: 'like some necklaces with matchign earrings',    
-    //             dateCreatedAt: Timestamp.fromDate(new Date()),
-    //             address: '2261 S Buckly rd',
-    //             city: 'aurora',
-    //             state: 'CO',
-    //             zipCode: '80013',
-    //             phoneNumber: '23123123123',
-    //             email: 'royal.j25@gmail.com',
-    //             birthdate: '09/29/1989',
-    //             anniversary: '',
-    //             significantOtherName: '',
-    //             significantOtherBirthdate: '',
-    //             ringSize: '',
-    //         }
-    //         createLocalStorageInfo()
-    //     })    
-     
-        
-    //     
-    // },[user])
-    
-
-// Usuario sube foto en /newentry/scanner.  --------------
-// La foto va a una API route de Next.js /api/extract-client -----
-// La API route llama a Gemini con la foto y un prompt ------
-// Gemini retorna los datos estructurados ------
-// Los datos se guardan en localStorage ---
-// El usuario es redirigido a /newentry/reviewform con los campos prellenados
-
+    const route = useRouter()
+    const [isLoading, setIsloading] = useState(false)
 
     const  test = async (e: React.ChangeEvent<HTMLInputElement> )=> {
-        
+        deleteLocalStorage()
         if(e.target.files && e.target.files[0]){
+            setIsloading(true)
             const image = e.target.files[0]
             try{
                 if(!user) return
@@ -66,25 +27,7 @@ export default function Scanner (){
                 const data = await response.json()
                 const cleaned = data.data.replace(/```json\n|```/g, '').trim()
                 const parsed = JSON.parse(cleaned)
-                
-                // const clienteInformationScannerRetriveData = { // respuesta del post simulada para no gastar tokens, 
-                // // es la simulacion de lo que muestra parsed
-                // // la info actual es de la foto IMG_3644.jpeg
-                //     address : "19014 Burlington Pl",
-                //     anniversary :  "September",
-                //     birthdate :  "6/18/99",
-                //     city :  "Denver",
-                //     email :  "madisonduke94@gmail.com",
-                //     firstName :  "Madison",
-                //     lastName :  "Duke",
-                //     notes :  "enhancer, sku number/item: 6817591, 2623056 (favorite), 6809439, 2532348, special order/repair instructions: 6817741 (His favorite.), 2522654.",
-                //     phoneNumber : "(303) 506 8606",
-                //     ringSize : "Band 4.5 Her.",
-                //     significantOtherBirthdate : "11/1/91",
-                //     significantOtherName : "Antony Mburu",
-                //     state : "CO",
-                //     zipCode : "80249",
-                // }
+           
                 UserFetchData(user.uid)
                 .then(data => {
                     if(!data) return
@@ -98,6 +41,8 @@ export default function Scanner (){
                     const coOwners = parsed.coOwners 
                     // const coOwners = ['SP','MK','JA']
                     createLocalStorageInfo(clietnObj,coOwners)
+                    route.push('/newentry/reviewform')
+                    setIsloading(false)
                 })
             }catch(error){
                 console.log(error)
@@ -112,15 +57,19 @@ export default function Scanner (){
     }
     return <>
         <section>
-            <Link href='/newentry/reviewform'>next view</Link>
+            <h2 className="text-2xl">{isLoading? 'Analyzing your Image' :"Open the scanner"}</h2>
+            {isLoading ? <LoadingSpinner/> : <div>
+                <label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="file_input">Take the Picture</label>
+                <input 
+                    id="photo" 
+                    type="file" 
+                    accept="image/*"
+                    capture="environment"
+                    onChange={test}
+                    className="block w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+            </div>}
         </section>
-        <section>
-            camera view feature
-            <input type="file" accept="image/*" capture="environment" id="photo" onChange={test} />
-            {/* <Image></Image> */}
-            <div onClick={deleteLocalStorage}>borrar</div>
-        </section>
-
     </>
 }
 
@@ -135,7 +84,7 @@ function convertToBase64(image: File): Promise<string | ArrayBuffer | null>{
 }
 
 const createLocalStorageInfo = (client: object, coOwners: Array<string> ) => {
-    localStorage.clear
+    localStorage.clear()
     const targetDate = new Date();
     targetDate.setDate(targetDate.getDate() + 7);
 
