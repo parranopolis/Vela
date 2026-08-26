@@ -10,9 +10,10 @@ export default function Scanner (){
     const { user } = useAuth()
     const route = useRouter()
     const [isLoading, setIsloading] = useState(false)
+    const [isError, setIsError] = useState<boolean | string>(false)
 
     const  test = async (e: React.ChangeEvent<HTMLInputElement> )=> {
-        deleteLocalStorage()
+        localStorage.clear()
         if(e.target.files && e.target.files[0]){
             setIsloading(true)
             const image = e.target.files[0]
@@ -24,40 +25,49 @@ export default function Scanner (){
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({base64})
                 })
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    setIsloading(false)
+                    setIsError("We couldn't recognize this image as a customer sheet; please try again.")
+                    console.log(`Server Error (${response.status}):`, errorText);
+                    return;
+                }
+
                 const data = await response.json()
                 const cleaned = data.data.replace(/```json\n|```/g, '').trim()
                 const parsed = JSON.parse(cleaned)
-           
-                UserFetchData(user.uid)
-                .then(data => {
-                    if(!data) return
-                    const clietnObj = {
-                        ...parsed,
-                        ownerId : data.userId,
-                        ownerInitials: data?.initials,
-                        dateCreatedAt: Timestamp.fromDate(new Date()),
-                        id: ''
-                    }
-                    const coOwners = parsed.coOwners 
-                    // const coOwners = ['SP','MK','JA']
-                    createLocalStorageInfo(clietnObj,coOwners)
-                    route.push('/newentry/reviewform')
+                console.log(parsed)
+                if(Object.hasOwn(parsed, 'error')){
                     setIsloading(false)
-                })
+                    setIsError("We couldn't recognize this image as a customer sheet; please try again.")
+                }else{
+                    UserFetchData(user.uid)
+                    .then(data => {
+                        if(!data) return
+                        const clietnObj = {
+                            ...parsed,
+                            ownerId : data.userId,
+                            ownerInitials: data?.initials,
+                            dateCreatedAt: Timestamp.fromDate(new Date()),
+                            id: ''
+                        }
+                        const coOwners = parsed.coOwners 
+                        createLocalStorageInfo(clietnObj,coOwners)
+                        route.push('/newentry/reviewform')
+                        setIsloading(false)
+                    })
+                }
             }catch(error){
                 console.log(error)
             }
         }
     }
 
-    const deleteLocalStorage = () =>{
-        console.log(localStorage)
-        localStorage.clear()
-        console.log(localStorage)
-    }
     return <>
         <section>
-            <h2 className="text-2xl">{isLoading? 'Analyzing your Image' :"Open the scanner"}</h2>
+            <h2 className="text-2xl text-center">{isLoading? 'Analyzing your Image' :"Open the scanner"}</h2>
+            {!isError ? '' : <p className="text-red-600 text-xl text-center">{isError}</p>}
             {isLoading ? <LoadingSpinner/> : <div>
                 <label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="file_input">Take the Picture</label>
                 <input 
