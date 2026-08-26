@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/lib/firebase/auth-context";
+import { AuthProvider, useAuth } from "@/lib/firebase/auth-context";
 import type { Metadata } from "next";
 import Script from 'next/script'
 import { Geist, Geist_Mono } from "next/font/google";

@@ -62,4 +62,8 @@ export async function getAllUserData(): Promise<UserData[] | null> {
 
 }
 
+export async function checkUserHasProfile(userId: string) {
+    
+}
+
 
