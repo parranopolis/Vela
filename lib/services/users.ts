@@ -1,5 +1,5 @@
-import { collection, doc, getDoc, getDocs, query, where} from 'firebase/firestore'
-
+import { collection, doc, getDoc, getDocs, query, where, setDoc} from 'firebase/firestore'
+import { NextResponse } from 'next/server';
 // import { collection, DocumentSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { UserData } from '@/types';
@@ -62,8 +62,16 @@ export async function getAllUserData(): Promise<UserData[] | null> {
 
 }
 
-export async function checkUserHasProfile(userId: string) {
-    
+export async function createNewUser(obj:UserData): Promise<UserData | null> {
+    const documentId = obj.userId // gets the user ID form auth/firebase autentication
+    try {
+        const docRef = doc(db, "userData", documentId) // create a custom document id with the previous user id
+        await setDoc(docRef, obj) // save the document
+        return obj
+    } catch (error) {
+        console.error("Error writing document to Firestore: ", error)
+        return null
+  }
 }
 
 

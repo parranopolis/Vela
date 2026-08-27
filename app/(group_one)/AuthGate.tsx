@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/firebase/auth-context";
-import Profile from "@/app/(group_two)/profile/page";
+import Profile from "@/app/(group_three)/profile/page";
 
 export function AuthGate({
   children,

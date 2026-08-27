@@ -14,12 +14,14 @@ interface AuthContextType {
 // false   = checked and does NOT exist
 // true    = checked and DOES exist
   profileComplete: boolean | null;
+  setProfileComplete : React.Dispatch<React.SetStateAction<boolean | null>>
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   profileComplete: null,
+  setProfileComplete: () => {}
 });
 
 export function AuthProvider({
@@ -83,6 +85,7 @@ export function AuthProvider({
         user,
         loading,
         profileComplete,
+        setProfileComplete
       }}
     >
       {loading ? <LoadingSpinner /> : children}
