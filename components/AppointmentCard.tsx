@@ -34,7 +34,6 @@ export function AppointmentCard({CardInfo}: {CardInfo: AppointmentData}) {
         'bg-Owner-3'
     ]
     const gradientColors = leadColors[CardInfo.leadStatus.toLowerCase()];
-    
     return(<>
         <section className={`relative p-2 bg-linear-to-b ${gradientColors} to-white rounded-3xl border-gray-200 border min-w-75`} onClick={()=> {setActiveId(CardInfo.id)}}>
             <article className='text-center text-ls font-bold'>
@@ -88,7 +87,6 @@ function OpenAppointmentDetails({clientInfo, onClose}: OpenAppointmentDetails) {
         }
         loadingData()
     },[clientInfo.clientId])
-
     return (
         <>
         {loading == true ? '' : <section className="bg-dark-accent/80 text-text-primary fixed inset-0 z-50">
@@ -111,7 +109,7 @@ function OpenAppointmentDetails({clientInfo, onClose}: OpenAppointmentDetails) {
                         <p>{data?.email}</p>
                     </div>
                     <hr />
-                    <span className="text-lg">Address</span>
+                    <p className="text-lg">Address</p>
                     <div className="ml-2 border rounded-2xl p-4 bg-white">
                         <p>{data?.address}</p>
                         <span>{data?.city}, </span>
@@ -119,10 +117,11 @@ function OpenAppointmentDetails({clientInfo, onClose}: OpenAppointmentDetails) {
                         <span>{data?.zipCode}</span>
                     </div>
                 </article>
-                <article className="text-xl flex justify-around">
+{/* its not working right now, skip it until we create the feature so users dont get confuse */}
+                {/* <article className="text-xl flex justify-around">
                     <button className="py-2 px-6 rounded-2xl bg-hot">Delete</button>
                     <button className="py-2 px-6 rounded-2xl bg-third-light">Update</button>
-                </article>
+                </article> */}
             </section>
         </section>
         }

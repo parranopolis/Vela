@@ -55,7 +55,6 @@ export async function AppointmentFetchData(userId: string, saleStatus:string) {
         } else {
             activeQuery = today
         }
-        console.log(activeQuery)
         const querySnapshot = await getDocs(activeQuery)
 
         const items = querySnapshot.docs.map(doc =>({
