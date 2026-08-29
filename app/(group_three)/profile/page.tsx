@@ -1,4 +1,5 @@
 'use client'
+import { Button } from "@/components/buttons";
 import { LoadingSpinner } from "@/components/loading";
 import { useAuth } from "@/lib/firebase/auth-context";
 import { createNewUser } from "@/lib/services/users";
@@ -93,7 +94,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         <input type="tel" pattern="[0-9]*"  id="phoneNumber" name="phoneNumber" maxLength={10} className="border-2 border-black rounded-md p-1" onChange={handleChange} placeholder="Example: 7202223311" required/>
         <label htmlFor="associateNumber">Associate Code</label>
         <input type="tel" pattern="[0-9]*" id="associateNumber" name="associateNumber" maxLength={6} className="border-2 border-black rounded-md p-1" onChange={handleChange} required/>
-        <button>Create Your Profile</button>
+        <Button text={'Create Your Profile'}/>
     </form>
     </section>}
     </>

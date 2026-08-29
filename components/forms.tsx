@@ -7,6 +7,7 @@ import { setClientData, searchClientDuplicates } from '@/lib/services/clients'
 import { setUpAppointment } from "@/lib/services/appointmensts";
 import { useAuth } from "@/lib/firebase/auth-context";
 import { useRouter } from "next/navigation";
+import { Button } from "./buttons";
 
 /**
 * Form component for new entries; retrieves data from localStorage (configured in /scanner)
@@ -167,13 +168,13 @@ export function UserForm () {
 
     return<>
         <section>
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit}> 
+            <form className="flex flex-col gap-4 [&_input]:border-2 [&_input]:rounded-2xl [&_input]:p-4 [&_input]:w-full p-4 [&_input]:my-2" onSubmit={handleSubmit}> 
                 <article>
                     <h1 className="text-2xl font-bold">Customer Information</h1>
                 </article>
                 <article>
-                    <label htmlFor="leadStatus">Select Lead Status</label>
-                    <select id="leadStatus" name='leadStatus' value={leadStatus} onChange={handleLeadStatus}>
+                    <label htmlFor="leadStatus" className="text-2xl">Select Lead Status:</label>
+                    <select id="leadStatus" name='leadStatus' value={leadStatus} onChange={handleLeadStatus} className="text-2xl text-red-600">
                         <option value="Hot">Hot</option>
                         <option value="Warm">Warm</option>
                         <option value="Cold">Cold</option>
@@ -181,68 +182,71 @@ export function UserForm () {
                 </article>
                 <article className='flex flex-col gap-4'>
                     <label htmlFor="firstName">First Name
-                        <input onChange={handleChange} type='text' id='firstName' name='firstName' placeholder="First Name" className="border-2 border-black rounded-md p-1 clientDataInfo" required value={clientInfo.firstName}/>
+                        <input onChange={handleChange} type='text' id='firstName' name='firstName' placeholder="First Name" className=" clientDataInfo" required value={clientInfo.firstName}/>
                     </label>
                     <label htmlFor="lastName">Last Name
-                        <input onChange={handleChange} type='text' id='lastName' name='lastName' placeholder="Last Name" className="border-2 border-black rounded-md p-1 clientDataInfo" required value={clientInfo.lastName}/>
+                        <input onChange={handleChange} type='text' id='lastName' name='lastName' placeholder="Last Name" className=" clientDataInfo" required value={clientInfo.lastName}/>
                     </label>
                     <label htmlFor="phoneNumber">Phone Number
-                        <input onChange={handleChange} type='text' maxLength={14} id='phoneNumber' name='phoneNumber' placeholder="Phone Number" className="border-2 border-black rounded-md p-1 clientDataInfo" required value={clientInfo.phoneNumber}/>
+                        <input onChange={handleChange} type='text' maxLength={14} id='phoneNumber' name='phoneNumber' placeholder="Phone Number" className=" clientDataInfo" required value={clientInfo.phoneNumber}/>
                     </label>
                     <label htmlFor="email">Email
-                        <input onChange={handleChange} type='email' id='email' name='email' placeholder="Email" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.email}/>
+                        <input onChange={handleChange} type='email' id='email' name='email' placeholder="Email" className=" clientDataInfo" value={clientInfo.email}/>
                     </label>
                 </article>
                 <article>
                     <label htmlFor="notes">Notes
-                        <input onChange={handleChange} id='notes' name='notes' placeholder="Notes" className="border-2 border-black rounded-md p-1 clientDataInfo" required value={clientInfo.notes}/>
+                        <textarea onChange={handleChange} id='notes' name='notes' placeholder="Notes" 
+                        className="field-sizing-content min-h-10 resize-none overflow-hidden w-full border-2 rounded-2xl p-2 clientDataInfo" required value={clientInfo.notes}/>
                     </label>
                 </article>
-                <input type="date" id='date' defaultValue={appointmentDate} onChange={handleChange2}/>
                 <article>
-                    Owner
+                    <label htmlFor="date">Select your Appointment Date</label>
+                    <input type="date" id='date' defaultValue={appointmentDate} onChange={handleChange2}/>
+                </article>
+                <article>
+                    <div className="mb-4">Owner - People included on this Sale</div>
                     <div className='flex gap-4'>
                         <CoOwners/>
                     </div>
                 </article>
                 <article>
                     <label htmlFor="ringSize">Ring Size
-                        <input onChange={handleChange} type='string' maxLength={2} id='ringSize' name='ringSize' placeholder="" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.ringSize}/>
+                        <input onChange={handleChange} type='string' maxLength={2} id='ringSize' name='ringSize' placeholder="" className=" clientDataInfo" value={clientInfo.ringSize}/>
                     </label>
                 </article>
                 <hr></hr>
                 
                 <article>
                     <label htmlFor="address">Address
-                        <input onChange={handleChange} type='text' id='address' name='address' placeholder="Address" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.address}/>
+                        <input onChange={handleChange} type='text' id='address' name='address' placeholder="Address" className=" clientDataInfo" value={clientInfo.address}/>
                     </label>
                     <label htmlFor="city">City
-                        <input onChange={handleChange} type='text' id='city' name='city' placeholder="City" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.city}/>
+                        <input onChange={handleChange} type='text' id='city' name='city' placeholder="City" className=" clientDataInfo" value={clientInfo.city}/>
                     </label>
                     <label htmlFor="state">State
-                        <input onChange={handleChange} type='text' id='state' name='state' maxLength={2} placeholder="State" className="uppercase border-2 border-black rounded-md p-1" value={clientInfo.state}/>
+                        <input onChange={handleChange} type='text' id='state' name='state' maxLength={2} placeholder="State" className="uppercase " value={clientInfo.state}/>
                     </label>
                     <label htmlFor="zipCode">Zip Code
-                        <input onChange={handleChange} type='text' id='zipCode' name='zipCode' placeholder="Zip Code" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.zipCode}/>
+                        <input onChange={handleChange} type='text' id='zipCode' name='zipCode' placeholder="Zip Code" className=" clientDataInfo" value={clientInfo.zipCode}/>
                     </label>
                 </article>
                 <hr></hr>
                 <article>
                     <label htmlFor="birthdate">Birthdate
-                        <input onChange={handleChange} type='text' id='birthdate' name='birthdate' placeholder="Birthdate" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.birthdate}/>
+                        <input onChange={handleChange} type='text' id='birthdate' name='birthdate' placeholder="Birthdate" className=" clientDataInfo" value={clientInfo.birthdate}/>
                     </label>
                     <label htmlFor="anniversary">Anniversary
-                        <input onChange={handleChange} type='text' id='anniversary' name='anniversary' placeholder="Anniversary" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.anniversary} />
+                        <input onChange={handleChange} type='text' id='anniversary' name='anniversary' placeholder="Anniversary" className=" clientDataInfo" value={clientInfo.anniversary} />
                     </label>
                     <label htmlFor="significantOtherName">Significant Other Name
-                        <input onChange={handleChange} type='text' id='significantOtherName' name='significantOtherName' placeholder="Significant Other Name" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.significantOtherName}/>
+                        <input onChange={handleChange} type='text' id='significantOtherName' name='significantOtherName' placeholder="Significant Other Name" className=" clientDataInfo" value={clientInfo.significantOtherName}/>
                     </label>
                     <label htmlFor="significantOtherBirthdate">Significant Other Birthdate
-                        <input onChange={handleChange} type='text' id='significantOtherBirthdate' name='significantOtherBirthdate' placeholder="Significant Other Birthdate" className="border-2 border-black rounded-md p-1 clientDataInfo" value={clientInfo.significantOtherBirthdate} />
+                        <input onChange={handleChange} type='text' id='significantOtherBirthdate' name='significantOtherBirthdate' placeholder="Significant Other Birthdate" className=" clientDataInfo" value={clientInfo.significantOtherBirthdate} />
                     </label>
                 </article>
-                <button>Sent</button>
-
+                <Button text={'Create New Record'}/>
             </form>
         </section>
 

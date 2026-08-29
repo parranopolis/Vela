@@ -1,4 +1,4 @@
-import { GoogleButton } from './googleButton'
+import { GoogleButton } from '@/components/googleButton'
 import Link  from 'next/link'
 export default function LoginPage() {
     return <>
