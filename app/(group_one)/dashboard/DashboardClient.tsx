@@ -26,6 +26,7 @@ export function DashboardClients({rules} : {rules: rulesStructure}) {
             AppointmentFetchData(user.uid, rules.saleStatus)
             .then((data) => {
                 if(data) {
+                    console.log(data)
                     setAppointments(data)
                     setIsLoading(false)
                 }

@@ -21,7 +21,7 @@ export function AppointmentCard({CardInfo}: {CardInfo: AppointmentData}) {
         coOwnersInitials.push(userId.initials);
     })
     
-    const dateObject = CardInfo.createdAt.toDate();
+    const dateObject = CardInfo.date.toDate();
     const formattedDate = new Intl.DateTimeFormat('en-US', {
     month: 'long',
     day: '2-digit',

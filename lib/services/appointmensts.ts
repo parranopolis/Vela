@@ -15,8 +15,6 @@ import { collection, addDoc, query, where, getDocs, Timestamp, orderBy } from 'f
 
 export async function AppointmentFetchData(userId: string, saleStatus:string) {
 
-
-
     const startOfToday = new Date()
     startOfToday.setHours(0,0,0,0)
 
@@ -32,7 +30,6 @@ export async function AppointmentFetchData(userId: string, saleStatus:string) {
             where('saleStatus', '==', saleStatus),
             where('date', '>=', Timestamp.fromDate(startOfToday)),
             where('date', '<=', Timestamp.fromDate(endOfToday)),
-            orderBy('date'),
         )
         // this brings the info for follow_up
         const follow_up = query(
@@ -42,11 +39,24 @@ export async function AppointmentFetchData(userId: string, saleStatus:string) {
             where('date', '<', Timestamp.fromDate(startOfToday)),
             orderBy('date'),
         )
+        const upcoming = query(
+            appointmentsRef,
+            where('date', '>=', Timestamp.fromDate(endOfToday)),
+            where('coOwners', 'array-contains', userId),
+            where('saleStatus', '==', 'set_up'),
+            orderBy('date'),
+        )
+        let activeQuery
 
-        
-        const querySnapshot = saleStatus === 'follow_up' 
-            ? await getDocs(follow_up)
-            : await getDocs(today)
+        if (saleStatus === 'follow_up') {
+            activeQuery = follow_up
+        } else if (saleStatus === 'upcoming') {
+            activeQuery = upcoming
+        } else {
+            activeQuery = today
+        }
+        console.log(activeQuery)
+        const querySnapshot = await getDocs(activeQuery)
 
         const items = querySnapshot.docs.map(doc =>({
             id: doc.id,
@@ -70,11 +80,3 @@ export async function setUpAppointment(objAppointmentData : object) {
     console.log(error)
    }
 }
-// export async function setUserData(obj : object) {
-//   try{
-//     const collRef = await addDoc(collection(db, 'clients'), obj)  
-//       return collRef.id
-//     }catch(error){
-//       return error
-//     }
-// }

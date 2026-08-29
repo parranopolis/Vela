@@ -19,6 +19,12 @@ export default async function Dashboard(){
       category: 'pending_callback',
       saleStatus: 'pending_callback',
       noDataMessage: 'There are no callbacks for today.'
+    },
+    future_appointments:{
+      title : 'Upcoming Appointments',
+      category: 'upcoming',
+      saleStatus: 'upcoming',
+      noDataMessage: 'There are no Upcoming Appointments.'
     }
     // saleStatus: 'set_up' | 'pending_callback' | 'discarted' | 'sale_closed'
 
@@ -28,12 +34,16 @@ export default async function Dashboard(){
       <article className='today_appointment'>
         <DashboardClients rules={rules.today_appointment}/>
       </article>
+      <article className='upcoming_appointments'>
+        <DashboardClients rules={rules.future_appointments}/>
+      </article>
       <article className='follow_up'>
         <DashboardClients rules={rules.follow_up}/>
       </article>
       <article className='pending_callback'>
         <DashboardClients rules={rules.pending_callback}/>
       </article>
+      
     </section>
     {/* <Link href='/login'>Login</Link> */}
     {/* <ButtonSignOut /> */}
