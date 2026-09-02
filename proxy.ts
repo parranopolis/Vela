@@ -6,13 +6,12 @@ export default async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
 
     if(!token){
-      console.log('token no es valido')
-      console.log(token) 
+      console.log(`Blocked: ${pathname} — no session_token`)
         return NextResponse.redirect(new URL('/login', request.url))
     }
     return NextResponse.next()
 }
  
 export const config = {
-    matcher: ['/dashboard/:path*', '/newentry/:path*', '/allentries/:path*','/userData/:path*','/profile/:path*']
+    matcher: ['/dashboard/:path*', '/newentry/:path*', '/allentries/:path*','/userData/:path*','/profile/:path*','/']
 }
