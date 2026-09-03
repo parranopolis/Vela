@@ -107,7 +107,6 @@ export function UserForm () {
                             
                         // create the whole object to sent it to firebase and create the appointment
                         appointmentData = {
-                        id: data,
                         primaryOwnerId: clientInfo.ownerId,
                         clientName: clientInfo.firstName,
                         clientLastName: clientInfo.lastName,

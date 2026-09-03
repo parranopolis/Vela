@@ -11,7 +11,7 @@ interface UserData {
 }
 
 interface AppointmentData {
-    id: string;
+    id?: string;
     primaryOwnerId: string;
     coOwners: string[];
     coOwnersMeta: {

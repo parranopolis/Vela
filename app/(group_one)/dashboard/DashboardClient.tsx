@@ -46,10 +46,7 @@ export function DashboardClients({rules} : {rules: rulesStructure}) {
                         {isLoading ? <LoadingSpinner/> : <>
                         {appointments && appointments.length > 0 ? (
                             <ul className="space-y-2">
-
-                            {appointments.map((cardInfo) => (
-                                <AppointmentCard key={cardInfo.id} CardInfo={cardInfo} />
-                            ))}
+                                {appointments.map((cardInfo) => (<AppointmentCard key={cardInfo.id} CardInfo={cardInfo} />))}
                             </ul>
                         ) : (
                             <p>{rules.noDataMessage}</p>
