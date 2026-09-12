@@ -34,8 +34,10 @@ export function AppointmentCard({CardInfo}: {CardInfo: AppointmentData}) {
         'bg-Owner-3'
     ]
     const gradientColors = leadColors[CardInfo.leadStatus.toLowerCase()];
+    
+    
     return(<>
-        <section className={`relative p-2 bg-linear-to-b ${gradientColors} to-white rounded-3xl border-gray-200 border min-w-75`} onClick={()=> {setActiveId(CardInfo.id)}}>
+        <section className={`relative p-2 bg-linear-to-b ${gradientColors} to-white rounded-3xl border-gray-200 border min-w-75`} onClick={()=> {setActiveId(CardInfo.clientId)}}>
             <article className='text-center text-ls font-bold'>
                 <span>{CardInfo.leadStatus} Lead</span>
             </article>
