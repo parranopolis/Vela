@@ -7,6 +7,8 @@ import {AppointmentCard} from '@/components/AppointmentCard'
 import { AppointmentData } from '@/types';
 import { LoadingSpinner } from '@/components/loading'
 
+import { AnimatePresence, motion } from 'framer-motion'
+
 interface rulesStructure {
       title : string,
       category: string,
@@ -14,12 +16,14 @@ interface rulesStructure {
       noDataMessage : string
 }
 
+
 //Here are all the appointments for the actual day
 export function DashboardClients({rules} : {rules: rulesStructure}) {
 
     const { user } = useAuth()
     const [appointments, setAppointments] = useState<AppointmentData[]>([])
     const [isLoading, setIsLoading ] = useState(true)
+    const [isCollapsed, setIsCollapsed] = useState(false)
 
     useEffect(()=>{
         if(!user) return
@@ -34,26 +38,39 @@ export function DashboardClients({rules} : {rules: rulesStructure}) {
     },[user, rules.saleStatus])
 
     return <>
-            <section >
-                <h1 className="text-center text-3xl mt-8">{rules.title}</h1>
-                <section className='grid gap-6
-                sm:grid-cold-1 
-                md:grid-cols-2 
-                lg:grid-cols-3 
-                xl:grid-cols-4 
-                '>
-                    <div className="p-6">
+            <section className=' break-inside-avoid mb-6 overflow-hidden'>
+                {/* title and collapse button */}
+                <h1 onClick={() => setIsCollapsed(!isCollapsed)} className="text-center text-3xl mt-8"
+                    ><motion.div
+                    style={{ display: 'inline-block', marginRight: '0.5rem' }}    
+                    initial={{ rotate: 0 }}
+                        animate={{ rotate: isCollapsed ? -90 : 0 }}
+                        transition={{ duration: 0.4 }}
+                        
+                    ><ion-icon name="chevron-down-outline"></ion-icon></motion.div>{rules.title}</h1>
+
+                {/* Card Component */}
+                <AnimatePresence>
+
+                {!isCollapsed ? <motion.div className={`py-6`} id={rules.category} 
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{ duration: 0.4 }}
+
+                >
                         {isLoading ? <LoadingSpinner/> : <>
-                        {appointments && appointments.length > 0 ? (
-                            <ul className="space-y-2">
-                                {appointments.map((cardInfo) => (<AppointmentCard key={cardInfo.id} CardInfo={cardInfo} />))}
-                            </ul>
-                        ) : (
-                            <p>{rules.noDataMessage}</p>
-                        )} 
+                            {isCollapsed ? null :     appointments && appointments.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {appointments.map((cardInfo) => (<AppointmentCard key={`${cardInfo.id}+${cardInfo.createdAt}`} CardInfo={cardInfo} />))}
+                                </ul>
+                            ) : (
+                                <p>{rules.noDataMessage}</p>
+                            )} 
                         </>}
-                    </div>
+                    </motion.div> : null
+                }
+                </AnimatePresence>
                 </section> 
-            </section> 
     </>
 }

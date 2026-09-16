@@ -30,18 +30,21 @@ export default async function Dashboard(){
 
   }
   return <>
-    <section className='grid '>
-      <article className='today_appointment'>
-        <DashboardClients rules={rules.today_appointment}/>
+
+    <section className="columns-1 md:columns-2 lg:columns-3 gap-6 p-4">
+      
+      <article className="break-inside-avoid mb-6 today_appointment">
+        <DashboardClients rules={rules.today_appointment} />
       </article>
-      <article className='upcoming_appointments'>
-        <DashboardClients rules={rules.future_appointments}/>
+ <article className="break-inside-avoid mb-6 upcoming_appointments">
+        <DashboardClients rules={rules.future_appointments} />
       </article>
-      <article className='follow_up'>
-        <DashboardClients rules={rules.follow_up}/>
+      <article className="break-inside-avoid mb-6 follow_up">
+        <DashboardClients rules={rules.follow_up} />
       </article>
-      <article className='pending_callback'>
-        <DashboardClients rules={rules.pending_callback}/>
+
+      <article className="break-inside-avoid mb-6 pending_callback">
+        <DashboardClients rules={rules.pending_callback} />
       </article>
       
     </section>

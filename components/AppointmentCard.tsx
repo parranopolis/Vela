@@ -37,7 +37,7 @@ export function AppointmentCard({CardInfo}: {CardInfo: AppointmentData}) {
     
     
     return(<>
-        <section className={`relative p-2 bg-linear-to-b ${gradientColors} to-white rounded-3xl border-gray-200 border min-w-75`} onClick={()=> {setActiveId(CardInfo.clientId)}}>
+        <section className={`relative p-2 bg-linear-to-b ${gradientColors} to-white rounded-3xl border-gray-200 border max-w-120 m-auto my-4`} onClick={()=> {setActiveId(CardInfo.clientId)}}>
             <article className='text-center text-ls font-bold'>
                 <span>{CardInfo.leadStatus} Lead</span>
             </article>
