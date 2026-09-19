@@ -33,7 +33,7 @@ export function AppointmentCard({CardInfo}: {CardInfo: AppointmentData}) {
     const config = leadConfig[status] || leadConfig.cold;
     
     return(<>
-        <section className='bg-white border border-text-gray rounded-3xl border-dashed p-4 flex flex-col gap-3'>
+        <section className='bg-white border border-text-gray rounded-3xl border-dashed p-4 flex flex-col gap-3' onClick={() => setActiveId(CardInfo.clientId)}>
             <article className='flex justify-between'>
                 <div className='w-4/6'>
                     <span className='font-semibold'>{CardInfo.clientName} {CardInfo.clientLastName}</span>

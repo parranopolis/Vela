@@ -6,9 +6,11 @@ export function NavBar () {
     return <>
         <nav className="flex justify-between bg-navy-accent text-secondary w-full px-8 h-16 items-center">
             <section>
-                <Image src={'/logo.png'} width={50}
-                height={50}
-                alt="Picture of the author"/>
+                <Link href={'/dashboard'}>
+                    <Image src={'/logo.png'} width={50}
+                    height={50}
+                    alt="Picture of the author"/>
+                </Link>
             </section>
             <section className="flex gap-4">
                 <Link href={'/dashboard'}><span><ion-icon name="home-outline"></ion-icon></span></Link>

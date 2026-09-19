@@ -36,7 +36,6 @@ export function DashboardClients({rules} : {rules: rulesStructure}) {
                 })
             .catch(console.error)
     },[user, rules.saleStatus])
-    console.log(appointments)
 
     return <>
             <section className=' break-inside-avoid overflow-hidden'>
