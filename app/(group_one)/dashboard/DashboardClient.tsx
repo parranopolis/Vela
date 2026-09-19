@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/firebase/auth-context'
 import { AppointmentFetchData } from '@/lib/services/appointmensts'
-import {AppointmentCard} from '@/components/AppointmentCard'
+import {AppointmentCard, NoAppointmentsCard } from '@/components/AppointmentCard'
 import { AppointmentData } from '@/types';
 import { LoadingSpinner } from '@/components/loading'
 
@@ -36,18 +36,21 @@ export function DashboardClients({rules} : {rules: rulesStructure}) {
                 })
             .catch(console.error)
     },[user, rules.saleStatus])
+    console.log(appointments)
 
     return <>
             <section className=' break-inside-avoid mb-6 overflow-hidden'>
                 {/* title and collapse button */}
-                <h1 onClick={() => setIsCollapsed(!isCollapsed)} className="text-center text-3xl mt-8"
+                
+
+                <h3 onClick={() => setIsCollapsed(!isCollapsed)} className="text-center text-2xl mt-8"
                     ><motion.div
                     style={{ display: 'inline-block', marginRight: '0.5rem' }}    
                     initial={{ rotate: 0 }}
                         animate={{ rotate: isCollapsed ? -90 : 0 }}
                         transition={{ duration: 0.4 }}
                         
-                    ><ion-icon name="chevron-down-outline"></ion-icon></motion.div>{rules.title}</h1>
+                    ><ion-icon name="chevron-down-outline"></ion-icon></motion.div>{rules.title}</h3>
 
                 {/* Card Component */}
                 <AnimatePresence>
@@ -65,7 +68,7 @@ export function DashboardClients({rules} : {rules: rulesStructure}) {
                                     {appointments.map((cardInfo) => (<AppointmentCard key={`${cardInfo.id}+${cardInfo.createdAt}`} CardInfo={cardInfo} />))}
                                 </ul>
                             ) : (
-                                <p>{rules.noDataMessage}</p>
+                                <NoAppointmentsCard message={rules.noDataMessage} />
                             )} 
                         </>}
                     </motion.div> : null
@@ -74,3 +77,6 @@ export function DashboardClients({rules} : {rules: rulesStructure}) {
                 </section> 
     </>
 }
+
+
+

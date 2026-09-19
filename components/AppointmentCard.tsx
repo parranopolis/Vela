@@ -130,3 +130,13 @@ function OpenAppointmentDetails({clientInfo, onClose}: OpenAppointmentDetails) {
         </>
     )
 }
+
+export function NoAppointmentsCard({message}: {message: string}) {
+    return (
+        <article className='text-center border-text-gray border bg-white border-dashed rounded-3xl py-8 px-4'>
+            <p><ion-icon name="checkmark-circle-outline"></ion-icon></p>
+            <p className="font-semibold">{message}</p>
+            <p>You&apos;re all caught up!. <span className="text-text-muted font-semibold">Scan a client sheet</span> to add one.</p>
+        </article>
+    )
+}

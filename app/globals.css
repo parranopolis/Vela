@@ -23,7 +23,8 @@
   --color-text-primary: #030812; /* black */
   --color-text-secondary: #99a1af; /* light gray */
   --color-text-inverse: #ffffff; /* white */
-  --color-text-muted: #6b7280; /* red */
+  --color-text-muted: #ee1515; /* red */
+  --color-text-gray: #64748b;
 
   /* Status — estos los necesitas para Hot/Warm/Cold */
   --color-hot: #ef4444; /* red */
