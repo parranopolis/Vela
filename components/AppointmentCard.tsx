@@ -1,6 +1,7 @@
 import { AppointmentData, ClientData } from "@/types";
 import { clientFetchData } from "@/lib/services/clients";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 /**
  * Appointment Data Card
@@ -10,11 +11,11 @@ import { useEffect, useState } from "react";
  */ 
 export function AppointmentCard({CardInfo}: {CardInfo: AppointmentData}) {
     const [activeId, setActiveId] = useState<string | null>(null)
-    const leadColors:Record<string,string> = {
-        hot: 'bg-hot via-red-100',
-        warm: 'bg-warm via-yellow-100',
-        cold: 'bg-cold via-blue-100'
-    }
+ const leadConfig: Record<string, { bg: string; text: string; dot: string }> = {
+    hot: { bg: 'bg-hot/30', text: 'text-text-hot', dot: 'bg-hot' },
+    warm: { bg: 'bg-warm/30', text: 'text-text-warm', dot: 'bg-warm' },
+    cold: { bg: 'bg-cold/30', text: 'text-cold', dot: 'bg-cold' }
+};
     const q = CardInfo.coOwnersMeta
     const coOwnersInitials: string[] = [];
     Object.values(q).forEach((userId) => {
@@ -28,31 +29,24 @@ export function AppointmentCard({CardInfo}: {CardInfo: AppointmentData}) {
     year: 'numeric'
     }).format(dateObject);
 
-    const bgInitial = [
-        'bg-Owner-1',
-        'bg-Owner-2',
-        'bg-Owner-3'
-    ]
-    const gradientColors = leadColors[CardInfo.leadStatus.toLowerCase()];
-    
+    const status = CardInfo.leadStatus.toLowerCase();
+    const config = leadConfig[status] || leadConfig.cold;
     
     return(<>
-        <section className={`relative p-2 bg-linear-to-b ${gradientColors} to-white rounded-3xl border-gray-200 border max-w-120 m-auto my-4`} onClick={()=> {setActiveId(CardInfo.clientId)}}>
-            <article className='text-center text-ls font-bold'>
-                <span>{CardInfo.leadStatus} Lead</span>
-            </article>
-            <article className='bg-secondary border-dashed border-gray-500 border h-32 flex flex-col justify-between p-4 rounded-3xl'>
-                <div className="text-2xl">{CardInfo.clientName} {CardInfo.clientLastName}</div>
-                <div className='flex flex-row justify-between items-center'>
-                    <article className='flex flex-row gap-2 text-center items-center'>
-                        {coOwnersInitials.map((initials, index) => (
-                            <div  key={index} className={`${bgInitial[index]} p-2 rounded-full`}>{initials}</div>
-                        ))}
-                    </article>            
+        <section className='bg-white border border-text-gray rounded-3xl border-dashed p-4 flex flex-col gap-3'>
+            <article className='flex justify-between'>
+                <div className='w-4/6'>
+                    <span className='font-semibold'>{CardInfo.clientName} {CardInfo.clientLastName}</span>
                 </div>
+                <div className={`px-2 text-xs h-6 ${config.bg} ${config.text} font-bold  rounded-3xl flex justify-end items-center`}><div className={`w-2 h-2 rounded-full ${config.dot}`}></div>&nbsp;&nbsp;<span>{CardInfo.leadStatus} Lead</span></div>
             </article>
-            <aside className='p-4 flex text-2xl text-text-secondary font-light justify-end'>
-                <span className=''>{formattedDate}</span> 
+            <article className='flex flex-row gap-1 text-center items-center'>
+                {coOwnersInitials.map((initials, index) => (
+                    <div  key={index} className='p-2 rounded-full bg-third-transparent text-third font-bold text-xs'>{initials}</div>
+                ))}
+            </article> 
+            <aside className=' text-text-gray'>
+                <span>📅 {formattedDate}</span> 
             </aside>
         </section>
         {activeId && (
@@ -136,7 +130,7 @@ export function NoAppointmentsCard({message}: {message: string}) {
         <article className='text-center border-text-gray border bg-white border-dashed rounded-3xl py-8 px-4'>
             <p><ion-icon name="checkmark-circle-outline"></ion-icon></p>
             <p className="font-semibold">{message}</p>
-            <p>You&apos;re all caught up!. <span className="text-text-muted font-semibold">Scan a client sheet</span> to add one.</p>
+            <p>You&apos;re all caught up!. <span className="text-text-muted font-semibold"><Link href="/newentry/scanner"> Scan a client sheet</Link></span> to add one.</p>
         </article>
     )
 }

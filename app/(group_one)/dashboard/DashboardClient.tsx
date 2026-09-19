@@ -39,11 +39,11 @@ export function DashboardClients({rules} : {rules: rulesStructure}) {
     console.log(appointments)
 
     return <>
-            <section className=' break-inside-avoid mb-6 overflow-hidden'>
+            <section className=' break-inside-avoid overflow-hidden'>
                 {/* title and collapse button */}
                 
 
-                <h3 onClick={() => setIsCollapsed(!isCollapsed)} className="text-center text-2xl mt-8"
+                <h3 onClick={() => setIsCollapsed(!isCollapsed)} className="text-center text-2xl"
                     ><motion.div
                     style={{ display: 'inline-block', marginRight: '0.5rem' }}    
                     initial={{ rotate: 0 }}
@@ -55,7 +55,7 @@ export function DashboardClients({rules} : {rules: rulesStructure}) {
                 {/* Card Component */}
                 <AnimatePresence>
 
-                {!isCollapsed ? <motion.div className={`py-6`} id={rules.category} 
+                {!isCollapsed ? <motion.div className={`py-2`} id={rules.category} 
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0 }}

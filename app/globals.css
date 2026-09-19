@@ -16,6 +16,7 @@
   --color-secondary: #eaedf8; /* gray */
   --color-third: #0033ff; /* blue */
   --color-third-light: #65a0ff; /* light blue */
+  --color-third-transparent: #65a0ff99; /* light blue with transparency */
   --color-navy-accent: #00033d; /* navy blue */
   --color-dark-accent: #030812;
 
@@ -30,6 +31,8 @@
   --color-hot: #ef4444; /* red */
   --color-warm: #f0b100; /* yellow */
   --color-cold: #2b7fff; /* blue */
+  --color-text-warm: #b4540a;
+  --color-text-hot: #b91c1b;
 
   /* Initials Owners Colors */
   --color-Owner-1: #05df72;
