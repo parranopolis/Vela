@@ -174,7 +174,7 @@ function BadgeLeadStatus({leadStatus}: {leadStatus: string}) {
     )
 }
 
-function formatDate(date: Timestamp): JSX.Element {
+function formatDate(date: Timestamp) {
     // Verificación de seguridad por si la fecha viene vacía
     if (!date?.toDate) {
         return <span>Start: N/A</span>;
