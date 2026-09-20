@@ -2,7 +2,7 @@ import { AppointmentData, ClientData } from "@/types";
 import { clientFetchData } from "@/lib/services/clients";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {Timestamp} from "firebase/firestore"
 
 /**
@@ -32,10 +32,14 @@ export function AppointmentCard({CardInfo}: {CardInfo: AppointmentData}) {
                 <div>{formatDate(CardInfo.date)}</div>
             </aside>
         </section>
+        <AnimatePresence>
+
+
         {activeId && (
             <OpenAppointmentDetails clientInfo={CardInfo} onClose={()=> setActiveId(null)}/>
         )
-        }
+    }
+    </AnimatePresence>
     </>)
 }
 
@@ -70,16 +74,21 @@ function OpenAppointmentDetails({clientInfo, onClose}: OpenAppointmentDetails) {
     },[clientInfo.clientId])
     return (
         <>
+
         {loading == true ? '' : <>
             <motion.section
-            className="bg-dark-accent/80 text-text-primary fixed inset-0 z-50"
-                initial={{ opacity: 0 }}
+            className="bg-dark-accent/80 text-text-primary fixed inset-0 z-50 h-full flex flex-col items-center justify-center"
+            initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
             >
-            <motion.section className="bg-secondary rounded-2xl m-8 flex flex-col mx-auto w-3/4 lg:max-w-3/6">
+            <motion.section className="rounded-2xl m-8 flex flex-col mx-auto w-11/12 lg:max-w-3/6 md:w-3/4 overflow-y-auto max-h-[92vh] my-auto bg-navy-accent"
+            initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+            >
                 {/* Names and exit button */}
-                <article className='flex justify-between items-center bg-third rounded-t-2xl text-white p-6'>
+                <article className='flex justify-between items-center  rounded-t-2xl text-white p-6'>
                     <div className="flex justify-end flex-col" >
                         <h2 className="text-3xl font-semibold">{data?.firstName} {data?.lastName}</h2>
                         <h4 className="text-sm">Appointment information</h4>
@@ -89,7 +98,7 @@ function OpenAppointmentDetails({clientInfo, onClose}: OpenAppointmentDetails) {
                     </div>
                 </article>
                 {/* CoOwners and Lead Status */}
-                <section className='p-4 flex flex-col gap-4'>
+                <section className='p-4 flex flex-col gap-4 bg-white'>
                     <article className='flex flex-row justify-between items-center gap-2'>
                         <div>
                             <span className="text-xs">Sale Owners</span>
@@ -104,9 +113,9 @@ function OpenAppointmentDetails({clientInfo, onClose}: OpenAppointmentDetails) {
                     </article>
                         <h2 className="text-lg">Contact</h2>
                     <section className='bg-white rounded-2xl shadow'> 
-                        <article className="flex flex-col
+                        <article className={`flex flex-col
                         md:flex-row md:justify-between 
-                        p-4 border-b border-text-gray/40">
+                        p-4 ${data?.email == '' && data.address == '' ? '' : 'border-b border-text-gray/40'}`}>
                             {data?.email == '' ? '' : <div className='flex md:justify-center items-center'><ion-icon name="mail-outline"></ion-icon>&nbsp;{data?.email}</div>}
                             <div className='flex md:justify-center items-center'><ion-icon name="call-outline"></ion-icon>&nbsp;{data?.phoneNumber}</div>
                         </article>
@@ -128,6 +137,7 @@ function OpenAppointmentDetails({clientInfo, onClose}: OpenAppointmentDetails) {
                 </article> */}
             </motion.section>
         </motion.section>
+
         </>
         }
         </>
